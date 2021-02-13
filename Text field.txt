@@ -1,0 +1,8 @@
+<mat-form-field class="mt-2">
+        <mat-icon matPrefix class="mr-2 vertical-align-middle">assignment</mat-icon>
+        <input matInput formControlName="course1" placeholder="Course1 Code">
+      </mat-form-field>
+      <mat-form-field [style.display]="courseNum == 2 ? 'block': 'none'" class="mt-2 mb-5">
+        <mat-icon matPrefix class="mr-2 vertical-align-middle">assignment</mat-icon>
+        <input matInput formControlName="course2" placeholder="Course2 Code">
+      </mat-form-field>
