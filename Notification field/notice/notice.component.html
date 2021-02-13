@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="modal-title">Publish Notice</div>
+  <div class="modal-content">
+    <mat-form-field class="modal-field">
+      <textarea rows="5" matInput [formControl]="notice" placeholder="Enter Notice" required></textarea>
+      <mat-error *ngIf="notice.invalid">email required</mat-error>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions class="modal-footer">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="onOk()">Submit</button>
+  </div>
+</div>
+
