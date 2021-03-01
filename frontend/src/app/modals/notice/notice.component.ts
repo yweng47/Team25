@@ -39,4 +39,8 @@ export class NoticeComponent implements OnInit {
       });
     }
   }
+
+  contentChange(event): void {
+    this.notice.patchValue(event.html);
+  }
 }

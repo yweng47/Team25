@@ -54,4 +54,8 @@ export class InstructorComponent implements OnInit {
       }
     });
   }
+
+  getCourseNames(courses): string {
+    return courses.map(course => course.subject + course.catalog).join(',');
+  }
 }

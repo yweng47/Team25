@@ -17,6 +17,7 @@ import { InviteComponent } from './modals/invite/invite.component';
 import { NoticeComponent } from './modals/notice/notice.component';
 import { ChairComponent } from './pages/chair/chair.component';
 import { InstructorComponent as InstructorAdminComponent } from './pages/instructor/instructor.component';
+import { QuillModule } from 'ngx-quill';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { InstructorComponent as InstructorAdminComponent } from './pages/instruc
     ReactiveFormsModule,
     HttpClientModule,
     ToastrModule.forRoot(),
+    QuillModule.forRoot(),
     FormsModule
   ],
   providers: [],

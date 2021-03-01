@@ -23,6 +23,6 @@
     </form>
   </mat-card>
   <div class="notice">
-    {{ notice.content }}
+    <quill-view [content]="notice.content" theme="snow"></quill-view>
   </div>
 </div>

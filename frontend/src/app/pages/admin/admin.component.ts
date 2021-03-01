@@ -28,7 +28,7 @@ export class AdminComponent implements OnInit {
 
   openInviteModal(): void {
     this.dialog.open(NoticeComponent, {
-      width: '500px'
+      width: '800px'
     });
   }
 
