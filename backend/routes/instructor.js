@@ -75,15 +75,35 @@ router.put('/course', async function(req, res, next) {
 router.get('/question', async function(req, res, next) {
 	const { course, user } = req.query;
 
-	const filter = {};
+	const match = {};
 	if (course) {
-		filter.course = course;
+		match.course = ObjectId(course);
 	}
 	if (user) {
-		filter.user = user;
+		match.user = ObjectId(user);
 	}
 
-	const questions = await Question.findOne(filter).sort({create_time: -1}).exec();
+	const questions = await Question.aggregate([
+		{
+			$lookup: {
+				from: "courses",
+				localField: "course",
+				foreignField: "_id",
+				as: "courses"
+			}
+		},
+		{
+			$lookup: {
+				from: "users",
+				localField: "user",
+				foreignField: "_id",
+				as: "users"
+			}
+		},
+		{
+			$match: match
+		}
+	]).exec();
 
 	return res.json(genSuccessResponse(questions));
 });

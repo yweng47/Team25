@@ -21,6 +21,7 @@ import { QuillModule } from 'ngx-quill';
 import { CourseComponent } from './pages/instructor/course/course.component';
 import { EditCourseComponent } from './modals/edit-course/edit-course.component';
 import { CourseQuestionsComponent } from './modals/course-questions/course-questions.component';
+import { QuestionComponent } from './pages/admin/question/question.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { CourseQuestionsComponent } from './modals/course-questions/course-quest
     InstructorAdminComponent,
     CourseComponent,
     EditCourseComponent,
-    CourseQuestionsComponent
+    CourseQuestionsComponent,
+    QuestionComponent
   ],
   imports: [
     CommonModule,

@@ -7,6 +7,7 @@ import { SignUpComponent } from '../pages/sign-up/sign-up.component';
 import { ChairComponent } from '../pages/chair/chair.component';
 import { InstructorComponent as InstructorAdminComponent } from '../pages/instructor/instructor.component';
 import { CourseComponent } from '../pages/instructor/course/course.component';
+import { QuestionComponent } from '../pages/admin/question/question.component';
 
 const routes: Routes = [
   {
@@ -29,6 +30,10 @@ const routes: Routes = [
       {
         path: 'instructor',
         component: InstructorComponent
+      },
+      {
+        path: 'question',
+        component: QuestionComponent
       }
     ]
   },

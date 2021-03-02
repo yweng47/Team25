@@ -30,10 +30,10 @@ export class CourseQuestionsComponent implements OnInit {
     const userInfo = this.userService.userInfo;
     this.questionService.getQuestions(this.data, userInfo._id).subscribe(response => {
       if (response.code === 200) {
-        if (response.data) {
-          this.question = response.data;
-          if (response.data.questions && response.data.questions.length > 0) {
-            response.data.questions.forEach(question => {
+        if (response.data && response.data.length > 0) {
+          this.question = response.data[0];
+          if (this.question.questions && this.question.questions.length > 0) {
+            this.question.questions.forEach(question => {
               this.questions.push(new FormControl(question, [Validators.required]));
             });
           } else {
