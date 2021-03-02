@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CourseService } from '../../../services/course.service';
 import { UserService } from '../../../services/user.service';
+import { MatDialog } from '@angular/material/dialog';
+import { EditCourseComponent } from '../../../modals/edit-course/edit-course.component';
 
 @Component({
   selector: 'app-course',
@@ -13,7 +15,8 @@ export class CourseComponent implements OnInit {
 
   constructor(
     private courseService: CourseService,
-    private userService: UserService
+    private userService: UserService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -26,6 +29,16 @@ export class CourseComponent implements OnInit {
       if (response.code === 200) {
         this.courses = response.data;
       }
+    });
+  }
+
+  openEditModal(courseId: string): void {
+    const dialogRef = this.dialog.open(EditCourseComponent, {
+      data: courseId,
+      width: '500px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      this.getCourses();
     });
   }
 }
