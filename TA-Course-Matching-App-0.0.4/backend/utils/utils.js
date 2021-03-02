@@ -1,4 +1,4 @@
-const {HTTP_CODE} = require('../constants/http-code')
+const {HTTP_CODE} = require('../constants/http-code');
 
 function genSuccessResponse(data=null, message='success', code = HTTP_CODE.SUCCESS) {
 	return {
