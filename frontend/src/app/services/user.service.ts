@@ -6,7 +6,17 @@ import apiUrl from '../config/url.config';
 @Injectable({ providedIn: 'root' })
 export class UserService {
 
+  userInfo: any = {};
+
   constructor(private http: HttpClient) {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      this.userInfo = JSON.parse(currentUser);
+    }
+  }
+
+  getCurrentUser(): any {
+    return this.userInfo;
   }
 
   login(email: string, password: string): Observable<any> {

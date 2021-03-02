@@ -1,0 +1,31 @@
+<div class="container">
+  <div class="modal-title">Course Questions</div>
+  <div class="modal-content">
+    <mat-form-field *ngFor="let question of questions; let i = index" class="modal-field">
+      <mat-icon matPrefix class="mr-2 vertical-align-middle">question_answer</mat-icon>
+      <input matInput [formControl]="question" [placeholder]="'Questions' + (i+1)" required>
+      <mat-error *ngIf="question.invalid">question {{ i+1 }} required</mat-error>
+    </mat-form-field>
+    <div class="text-align-right">
+      <mat-icon
+        matPrefix
+        class="mr-2 vertical-align-middle action-btn"
+        *ngIf="questions.length > 1"
+        (click)="removeQuestion()">
+        remove_circle_outline
+      </mat-icon>
+      <mat-icon
+        matPrefix
+        class="mr-2 vertical-align-middle action-btn"
+        *ngIf="questions.length < 10"
+        (click)="addQuestion()"
+      >add_circle_outline
+      </mat-icon>
+    </div>
+  </div>
+  <div mat-dialog-actions class="modal-footer">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" type="submit" (click)="onOk()">Submit</button>
+  </div>
+</div>
+

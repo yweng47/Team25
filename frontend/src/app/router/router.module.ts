@@ -6,6 +6,7 @@ import { InstructorComponent } from '../pages/admin/instructor/instructor.compon
 import { SignUpComponent } from '../pages/sign-up/sign-up.component';
 import { ChairComponent } from '../pages/chair/chair.component';
 import { InstructorComponent as InstructorAdminComponent } from '../pages/instructor/instructor.component';
+import { CourseComponent } from '../pages/instructor/course/course.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,17 @@ const routes: Routes = [
   {
     path: 'instructor',
     component: InstructorAdminComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'course',
+        pathMatch: 'full'
+      },
+      {
+        path: 'course',
+        component: CourseComponent
+      }
+    ]
   },
   {
     path: '',

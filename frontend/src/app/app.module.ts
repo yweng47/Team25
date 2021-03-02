@@ -18,6 +18,9 @@ import { NoticeComponent } from './modals/notice/notice.component';
 import { ChairComponent } from './pages/chair/chair.component';
 import { InstructorComponent as InstructorAdminComponent } from './pages/instructor/instructor.component';
 import { QuillModule } from 'ngx-quill';
+import { CourseComponent } from './pages/instructor/course/course.component';
+import { EditCourseComponent } from './modals/edit-course/edit-course.component';
+import { CourseQuestionsComponent } from './modals/course-questions/course-questions.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,10 @@ import { QuillModule } from 'ngx-quill';
     InviteComponent,
     NoticeComponent,
     ChairComponent,
-    InstructorAdminComponent
+    InstructorAdminComponent,
+    CourseComponent,
+    EditCourseComponent,
+    CourseQuestionsComponent
   ],
   imports: [
     CommonModule,
