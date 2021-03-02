@@ -1,9 +1,9 @@
-const {HTTP_CODE} = require('../constants/http-code')
+const {HTTP_CODE} = require('../constants/http-code');
 
-function genSuccessResponse(data=null, message='success') {
+function genSuccessResponse(data=null, message='success', code = HTTP_CODE.SUCCESS) {
 	return {
 		data,
-		code: HTTP_CODE.SUCCESS,
+		code,
 		message
 	}
 }
@@ -16,7 +16,15 @@ function genErrorResponse(errors, message='error') {
 	}
 }
 
+function genInvalidParamsResponse(message= 'invalid params') {
+	return {
+		code: HTTP_CODE.INVALID_PARAMS,
+		message
+	}
+}
+
 module.exports = {
 	genSuccessResponse,
-	genErrorResponse
+	genErrorResponse,
+	genInvalidParamsResponse
 }

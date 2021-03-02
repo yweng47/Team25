@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const RoleSchema = require('./role');
 
 const Schema = mongoose.Schema;
 
@@ -8,8 +7,8 @@ const UserSchema = new Schema({
 	email: { type: String, require: true },
 	password: { type: String, require: true },
 	name: { type: String, require: true },
-	roles: { type: [RoleSchema], require: true },
-	relateCourses: []
+	roles: [{ type: Schema.Types.ObjectId, ref: 'role', require: true }],
+	relateCourses: [{ type: Schema.Types.ObjectId, ref: 'course' }]
 });
 
 module.exports = mongoose.model('user', UserSchema);

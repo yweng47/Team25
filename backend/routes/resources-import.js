@@ -3,6 +3,7 @@ const router = express.Router();
 const xlsx = require('node-xlsx');
 const fs = require('fs');
 const Course = require('../schema/course');
+const User = require('../schema/user');
 const {genSuccessResponse} = require('../utils/utils')
 const {genErrorResponse} = require('../utils/utils')
 
@@ -34,9 +35,9 @@ router.get('/course', async function(req, res, next) {
 	}
 	Course.insertMany(courseDocs, (err) => {
 		if (err) {
-			res.json(genErrorResponse(err))
+			res.json(genErrorResponse(err));
 		} else {
-			res.json(genSuccessResponse())
+			res.json(genSuccessResponse());
 		}
 	});
 });

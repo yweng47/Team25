@@ -6,6 +6,8 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const publicRouter = require('./routes/public');
 const resourcesImportRouter = require('./routes/resources-import');
+const adminRouter = require('./routes/admin');
+const instructorRouter = require('./routes/instructor');
 
 const app = express();
 
@@ -30,6 +32,8 @@ app.all('*', (req, res, next) => {
 
 app.use('/', publicRouter);
 app.use('/import', resourcesImportRouter);
+app.use('/admin', adminRouter);
+app.use('/instructor', instructorRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
