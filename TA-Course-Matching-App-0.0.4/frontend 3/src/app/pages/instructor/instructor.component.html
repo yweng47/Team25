@@ -13,7 +13,11 @@
   <mat-drawer-container class="content" autosize>
     <mat-drawer #drawer class="sidenav" mode="side" [opened]="true">
       <ul class="drawer-list">
-        <li class="drawer-item">
+        <li class="drawer-item" routerLink="/instructor/application">
+          <mat-icon class="vertical-align-middle mr-2">assignment</mat-icon>
+          <span class="vertical-align-middle">applications</span>
+        </li>
+        <li class="drawer-item" routerLink="/instructor/course">
           <mat-icon class="vertical-align-middle mr-2">ballot</mat-icon>
           <span class="vertical-align-middle">courses</span>
         </li>

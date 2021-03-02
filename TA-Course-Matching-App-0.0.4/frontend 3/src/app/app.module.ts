@@ -21,6 +21,10 @@ import { QuillModule } from 'ngx-quill';
 import { CourseComponent } from './pages/instructor/course/course.component';
 import { EditCourseComponent } from './modals/edit-course/edit-course.component';
 import { CourseQuestionsComponent } from './modals/course-questions/course-questions.component';
+import { QuestionComponent } from './pages/admin/question/question.component';
+import { ApplicationComponent } from './pages/admin/application/application.component';
+import { ApplicationComponent as InstructorApplicationComponent } from './pages/instructor/application/application.component';
+import { NgxSortableModule } from 'ngx-sortable';
 
 @NgModule({
   declarations: [
@@ -35,7 +39,10 @@ import { CourseQuestionsComponent } from './modals/course-questions/course-quest
     InstructorAdminComponent,
     CourseComponent,
     EditCourseComponent,
-    CourseQuestionsComponent
+    CourseQuestionsComponent,
+    QuestionComponent,
+    ApplicationComponent,
+    InstructorApplicationComponent
   ],
   imports: [
     CommonModule,
@@ -47,7 +54,8 @@ import { CourseQuestionsComponent } from './modals/course-questions/course-quest
     HttpClientModule,
     ToastrModule.forRoot(),
     QuillModule.forRoot(),
-    FormsModule
+    FormsModule,
+    NgxSortableModule
   ],
   providers: [],
   bootstrap: [AppComponent]
