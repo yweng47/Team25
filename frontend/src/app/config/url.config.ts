@@ -6,6 +6,7 @@ const apiUrl = {
   inviteRegister: `${host}/admin/inviteRegister`,
   checkToken: `${host}/checkToken`,
   getCourseByCode: `${host}/getCourseByCode`,
+  getCourseByUser: `${host}/instructor/getCourses`,
   notice: `${host}/admin/notice`
 };
 
