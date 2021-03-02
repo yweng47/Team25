@@ -15,7 +15,17 @@ export class ApplicationService {
     return this.http.post(apiUrl.importApplications, formData);
   }
 
-  getAllApplications(): Observable<any> {
-    return this.http.get(apiUrl.applications);
+  getAllApplications(course?: string): Observable<any> {
+    const params: any = {};
+    if (course) {
+      params.course = course;
+    }
+    return this.http.get(apiUrl.applications, {
+      params
+    });
+  }
+
+  updateAllApplication(applications: any[]): Observable<any> {
+    return this.http.put(apiUrl.applications , applications);
   }
 }

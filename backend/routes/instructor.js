@@ -128,6 +128,12 @@ router.post('/question', async function(req, res, next) {
 });
 
 router.get('/application', async function(req, res, next) {
+	const { course } = req.query;
+
+	const match = {
+		course: course ? ObjectId(course): { $exists: true }
+	};
+
 	const applications = await Application.aggregate([
 		{
 			$lookup: {
@@ -136,9 +142,27 @@ router.get('/application', async function(req, res, next) {
 				foreignField: "_id",
 				as: "courses"
 			}
+		},
+		{
+			$match: match
 		}
 	]).exec();
 	return res.json(genSuccessResponse(applications));
+});
+
+router.put('/application', async function(req, res, next) {
+	const applications = req.body;
+
+	if (!applications) {
+		return res.join(genInvalidParamsResponse());
+	}
+
+	for (let i = 0, l = applications.length; i < l; i++) {
+		const application = new Application({ ...applications[i] });
+		await Application.findOneAndUpdate({ _id: application._id }, application).exec();
+	}
+
+	res.json(genSuccessResponse());
 });
 
 module.exports = router;

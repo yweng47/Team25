@@ -80,6 +80,7 @@ router.post('/application', upload.single('file'), async function(req, res, next
 			applicant_email: applicationData[2],
 			status: applicationData[3],
 			answers: answers,
+			order: 0
 		});
 		applications.push(application);
 	}
