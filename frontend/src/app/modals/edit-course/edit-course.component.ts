@@ -10,7 +10,7 @@ import { CourseService } from '../../services/course.service';
   styleUrls: ['./edit-course.component.css']
 })
 export class EditCourseComponent implements OnInit {
-  // course: any = {};
+  course: any = {};
   validateForm!: FormGroup;
 
   constructor(
@@ -46,6 +46,7 @@ export class EditCourseComponent implements OnInit {
   getCourse(): void {
     this.courseService.getCourseById(this.data).subscribe(response => {
       if (response.code === 200) {
+        this.course = response.data;
         this.validateForm.patchValue({ ...response.data });
       }
     });
@@ -62,8 +63,11 @@ export class EditCourseComponent implements OnInit {
       this.validateForm.controls[i].updateValueAndValidity();
     }
     if (this.validateForm.valid) {
-      console.log(this);
-      this.courseService.updateCourse(this.validateForm.value).subscribe(response => {
+      const course = {
+        _id: this.course._id,
+        ...this.validateForm.value
+      };
+      this.courseService.updateCourse(course).subscribe(response => {
         if (response.code === 200) {
           this.toastr.success('update course success');
           this.dialogRef.close();

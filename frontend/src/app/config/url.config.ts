@@ -7,7 +7,8 @@ const apiUrl = {
   checkToken: `${host}/checkToken`,
   getCourseByCode: `${host}/getCourseByCode`,
   course: `${host}/instructor/course`,
-  notice: `${host}/admin/notice`
+  notice: `${host}/admin/notice`,
+  question: `${host}/instructor/question`,
 };
 
 export default apiUrl;

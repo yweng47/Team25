@@ -3,6 +3,7 @@ import { CourseService } from '../../../services/course.service';
 import { UserService } from '../../../services/user.service';
 import { MatDialog } from '@angular/material/dialog';
 import { EditCourseComponent } from '../../../modals/edit-course/edit-course.component';
+import { CourseQuestionsComponent } from '../../../modals/course-questions/course-questions.component';
 
 @Component({
   selector: 'app-course',
@@ -39,6 +40,13 @@ export class CourseComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       this.getCourses();
+    });
+  }
+
+  openQuestionsModal(courseId: string): void {
+    this.dialog.open(CourseQuestionsComponent, {
+      data: courseId,
+      width: '500px'
     });
   }
 }

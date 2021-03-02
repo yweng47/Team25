@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../schema/user');
 const Course = require('../schema/course');
+const Question = require('../schema/question');
 const {genSuccessResponse} = require('../utils/utils');
 const mongoose = require('mongoose');
 const {genErrorResponse} = require('../utils/utils');
@@ -62,7 +63,41 @@ router.put('/course', async function(req, res, next) {
 
 	const course = new Course({ ...courseBody })
 
-	course.save((err) => {
+	Course.findOneAndUpdate({ _id: course._id }, course, (err) => {
+		if (err) {
+			res.json(genErrorResponse(err));
+		} else {
+			res.json(genSuccessResponse());
+		}
+	});
+});
+
+router.get('/question', async function(req, res, next) {
+	const { course, user } = req.query;
+
+	const filter = {};
+	if (course) {
+		filter.course = course;
+	}
+	if (user) {
+		filter.user = user;
+	}
+
+	const questions = await Question.findOne(filter).sort({create_time: -1}).exec();
+
+	return res.json(genSuccessResponse(questions));
+});
+
+router.post('/question', async function(req, res, next) {
+	const questionBody = req.body;
+
+	if (!questionBody) {
+		return res.join(genInvalidParamsResponse());
+	}
+
+	const question = new Question({ ...questionBody })
+
+	Question.findOneAndUpdate({ _id: question._id }, question, { upsert: true }, (err) => {
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {
