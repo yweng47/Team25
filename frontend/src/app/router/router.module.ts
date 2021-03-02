@@ -8,6 +8,7 @@ import { ChairComponent } from '../pages/chair/chair.component';
 import { InstructorComponent as InstructorAdminComponent } from '../pages/instructor/instructor.component';
 import { CourseComponent } from '../pages/instructor/course/course.component';
 import { QuestionComponent } from '../pages/admin/question/question.component';
+import { ApplicationComponent } from '../pages/admin/application/application.component';
 
 const routes: Routes = [
   {
@@ -34,6 +35,10 @@ const routes: Routes = [
       {
         path: 'question',
         component: QuestionComponent
+      },
+      {
+        path: 'application',
+        component: ApplicationComponent
       }
     ]
   },

@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../schema/user');
 const Course = require('../schema/course');
 const Question = require('../schema/question');
+const Application = require('../schema/application');
 const {genSuccessResponse} = require('../utils/utils');
 const mongoose = require('mongoose');
 const {genErrorResponse} = require('../utils/utils');
@@ -124,6 +125,20 @@ router.post('/question', async function(req, res, next) {
 			res.json(genSuccessResponse());
 		}
 	});
+});
+
+router.get('/application', async function(req, res, next) {
+	const applications = await Application.aggregate([
+		{
+			$lookup: {
+				from: "courses",
+				localField: "course",
+				foreignField: "_id",
+				as: "courses"
+			}
+		}
+	]).exec();
+	return res.json(genSuccessResponse(applications));
 });
 
 module.exports = router;

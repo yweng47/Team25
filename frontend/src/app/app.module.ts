@@ -22,6 +22,7 @@ import { CourseComponent } from './pages/instructor/course/course.component';
 import { EditCourseComponent } from './modals/edit-course/edit-course.component';
 import { CourseQuestionsComponent } from './modals/course-questions/course-questions.component';
 import { QuestionComponent } from './pages/admin/question/question.component';
+import { ApplicationComponent } from './pages/admin/application/application.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { QuestionComponent } from './pages/admin/question/question.component';
     CourseComponent,
     EditCourseComponent,
     CourseQuestionsComponent,
-    QuestionComponent
+    QuestionComponent,
+    ApplicationComponent
   ],
   imports: [
     CommonModule,

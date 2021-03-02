@@ -9,6 +9,8 @@ const apiUrl = {
   course: `${host}/instructor/course`,
   notice: `${host}/admin/notice`,
   question: `${host}/instructor/question`,
+  importApplications: `${host}/import/application`,
+  applications: `${host}/instructor/application`
 };
 
 export default apiUrl;
