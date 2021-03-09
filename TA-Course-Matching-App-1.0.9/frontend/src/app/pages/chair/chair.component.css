@@ -1,0 +1,36 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+}
+
+.content .sidenav {
+  width: 250px;
+}
+
+.content .drawer-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.content .sidenav .drawer-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0,0,0,.12);
+  cursor: pointer;
+  transition: all 300ms ease;
+  outline: none;
+}
+
+.content .sidenav .drawer-item:hover {
+  background-color: rgba(63, 81, 181,.12);
+}

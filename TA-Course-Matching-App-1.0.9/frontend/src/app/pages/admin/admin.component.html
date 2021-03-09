@@ -1,0 +1,35 @@
+<div class="container">
+  <mat-toolbar color="primary">
+    <button mat-icon-button (click)="drawer.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>Administrator</span>
+    <span class="spacer"></span>
+    <button mat-button [matMenuTriggerFor]="menu">{{ userInfo.name }}</button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="openInviteModal()">Publish Notice</button>
+      <button mat-menu-item (click)="logout()">Logout</button>
+    </mat-menu>
+  </mat-toolbar>
+  <mat-drawer-container class="content" autosize>
+    <mat-drawer #drawer class="sidenav" mode="side" [opened]="true">
+      <ul class="drawer-list">
+        <li class="drawer-item" routerLink="/admin/instructor">
+          <mat-icon class="vertical-align-middle mr-2">groups</mat-icon>
+          <span class="vertical-align-middle">instructors</span>
+        </li>
+        <li class="drawer-item" routerLink="/admin/question">
+          <mat-icon class="vertical-align-middle mr-2">question_answer</mat-icon>
+          <span class="vertical-align-middle">questions</span>
+        </li>
+        <li class="drawer-item" routerLink="/admin/application">
+          <mat-icon class="vertical-align-middle mr-2">assignment</mat-icon>
+          <span class="vertical-align-middle">applications</span>
+        </li>
+      </ul>
+    </mat-drawer>
+    <mat-drawer-content class="drawer-content">
+      <router-outlet></router-outlet>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>
