@@ -1,0 +1,8 @@
+.import-btn {
+  display: none;
+}
+
+td.mat-cell, th.mat-header-cell {
+  width: 16.66666666%;
+  text-align: center;
+}
