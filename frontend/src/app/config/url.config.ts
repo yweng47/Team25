@@ -10,7 +10,9 @@ const apiUrl = {
   notice: `${host}/admin/notice`,
   question: `${host}/instructor/question`,
   importApplications: `${host}/import/application`,
-  applications: `${host}/instructor/application`
+  applications: `${host}/instructor/application`,
+  importEnrolmentHours: `${host}/import/enrolmentHour`,
+  enrolmentHours: `${host}/instructor/enrolmentHour`
 };
 
 export default apiUrl;

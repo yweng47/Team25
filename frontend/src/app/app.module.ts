@@ -25,6 +25,7 @@ import { QuestionComponent } from './pages/admin/question/question.component';
 import { ApplicationComponent } from './pages/admin/application/application.component';
 import { ApplicationComponent as InstructorApplicationComponent } from './pages/instructor/application/application.component';
 import { NgxSortableModule } from 'ngx-sortable';
+import { EnrolmentAndHourComponent } from './pages/chair/enrolment-and-hour/enrolment-and-hour.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { NgxSortableModule } from 'ngx-sortable';
     CourseQuestionsComponent,
     QuestionComponent,
     ApplicationComponent,
-    InstructorApplicationComponent
+    InstructorApplicationComponent,
+    EnrolmentAndHourComponent
   ],
   imports: [
     CommonModule,

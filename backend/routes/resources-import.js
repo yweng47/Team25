@@ -4,10 +4,10 @@ const xlsx = require('node-xlsx');
 const fs = require('fs');
 const Course = require('../schema/course');
 const Application = require('../schema/application');
+const EnrolmentHour = require('../schema/enrolmentHour');
 const multer = require('multer');
+const { taHourRound, genSuccessResponse, genErrorResponse } = require('../utils/utils')
 const upload = multer();
-const {genSuccessResponse} = require('../utils/utils')
-const {genErrorResponse} = require('../utils/utils')
 
 router.get('/course', async function(req, res, next) {
 	const workSheetsFromBuffer = xlsx.parse(fs.readFileSync(`${__dirname}/../resources/Enrolment-20200918-sanitized.xlsx`));
@@ -85,6 +85,52 @@ router.post('/application', upload.single('file'), async function(req, res, next
 		applications.push(application);
 	}
 	Application.insertMany(applications, (err) => {
+		if (err) {
+			res.json(genErrorResponse(err));
+		} else {
+			res.json(genSuccessResponse());
+		}
+	});
+});
+
+router.post('/enrolmentHour', upload.single('file'), async function(req, res, next) {
+	const file = req.file;
+	const workSheetsFromBuffer = xlsx.parse(file.buffer);
+	const sheetData = workSheetsFromBuffer[0].data;
+	const enrolmentHours = [];
+	for (let i = 1; i < sheetData.length; i++) {
+		const applicationData = sheetData[i];
+		const [course, lab_hour, previous_enrollments, previous_ta_hours, current_enrollments] = applicationData;
+		const courseCodeMatches = await Course.aggregate([
+			{
+				$addFields: {
+					subjectCode: {
+						$concat: ["$subject", "$catalog"],
+					}
+				}
+			},
+			{
+				$match: {
+					subjectCode: course
+				}
+			},
+		]).exec();
+		if (courseCodeMatches.length === 0) {
+			return res.json(genErrorResponse(null, 'invalid course code'));
+		}
+		let currentTAHours = previous_ta_hours / previous_enrollments * current_enrollments;
+		currentTAHours = taHourRound(currentTAHours);
+		const enrolmentHour = new EnrolmentHour({
+			course: courseCodeMatches[0]._id,
+			lab_hour,
+			previous_enrollments,
+			previous_ta_hours,
+			current_enrollments,
+			current_ta_hours: currentTAHours
+		});
+		enrolmentHours.push(enrolmentHour);
+	}
+	EnrolmentHour.insertMany(enrolmentHours, (err) => {
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {
