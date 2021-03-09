@@ -1,6 +1,6 @@
 <div class="top-bar">
   <div class="mb-5 text-align-right">
-    <button  mat-flat-button color="primary">Download</button>
+    <button  mat-flat-button color="primary" (click)="download()">Download</button>
   </div>
 </div>
 <table mat-table [dataSource]="courseTAs" class="mat-elevation-z8">
@@ -28,7 +28,7 @@
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef> Actions </th>
     <td mat-cell *matCellDef="let element">
-      <button mat-button color="primary">Detail</button>
+      <button mat-button color="primary" (click)="goTAHours(element.courses[0]._id)">Detail</button>
     </td>
   </ng-container>
 

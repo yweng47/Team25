@@ -13,7 +13,8 @@ const apiUrl = {
   applications: `${host}/instructor/application`,
   importEnrollmentHours: `${host}/import/enrollmentHour`,
   enrollmentHours: `${host}/instructor/enrollmentHour`,
-  courseTA: `${host}/instructor/courseTA`
+  courseTA: `${host}/instructor/courseTA`,
+  taHour: `${host}/instructor/taHour`
 };
 
 export default apiUrl;

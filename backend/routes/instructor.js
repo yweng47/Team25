@@ -321,4 +321,49 @@ router.get('/courseTA', async function(req, res, next) {
 	return res.json(genSuccessResponse(enrollmentHours));
 });
 
+router.get('/taHour', async function(req, res, next) {
+	const { courseId, email } = req.query;
+
+	const match = {};
+	if (courseId) {
+		match["courses._id"] = ObjectId(courseId)
+	}
+	if (email) {
+		match.applicant_email = email;
+	}
+
+	const enrollmentHours = await Allocation.aggregate([
+		{
+			$lookup: {
+				from: "enrolment_hours",
+				localField: "enrollment",
+				foreignField: "_id",
+				as: "enrolments"
+			}
+		},
+		{ $unwind: '$enrolments' },
+		{
+			$lookup: {
+				from: "courses",
+				localField: "enrolments.course",
+				foreignField: "_id",
+				as: "courses"
+			}
+		},
+		{ $unwind: '$courses' },
+		{
+			$lookup: {
+				from: "applications",
+				localField: "applicant_email",
+				foreignField: "applicant_email",
+				as: "applications"
+			}
+		},
+		{
+			$match: match
+		}
+	]).exec();
+	return res.json(genSuccessResponse(enrollmentHours));
+});
+
 module.exports = router;

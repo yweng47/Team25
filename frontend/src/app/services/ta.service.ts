@@ -12,4 +12,17 @@ export class TAService {
   getCourseTA(): Observable<any> {
     return this.http.get(apiUrl.courseTA);
   }
+
+  getTAHours(courseId?: string, email?: string): Observable<any> {
+    const params: any = {};
+    if (courseId) {
+      params.courseId = courseId;
+    }
+    if (email) {
+      params.email = email;
+    }
+    return this.http.get(apiUrl.taHour, {
+      params
+    });
+  }
 }
