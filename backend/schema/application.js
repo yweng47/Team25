@@ -9,7 +9,6 @@ const ApplicationSchema = new Schema({
 	applicant_email: String,
 	answers: [String],
 	status: Number,
-	preference: Number,
 	order: Number
 });
 

@@ -29,6 +29,7 @@ import { EnrolmentAndHourComponent } from './pages/chair/enrolment-and-hour/enro
 import { CourseTaComponent } from './pages/chair/course-ta/course-ta.component';
 import { TaHourComponent } from './pages/chair/ta-hour/ta-hour.component';
 import { TsCourseComponent } from './modals/ts-course/ts-course.component';
+import { PreferenceComponent } from './pages/admin/preference/preference.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { TsCourseComponent } from './modals/ts-course/ts-course.component';
     EnrolmentAndHourComponent,
     CourseTaComponent,
     TaHourComponent,
-    TsCourseComponent
+    TsCourseComponent,
+    PreferenceComponent
   ],
   imports: [
     CommonModule,

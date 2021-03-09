@@ -9,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ApplicationComponent implements OnInit {
   applications = [];
-  displayedColumns: string[] = ['course', 'user_name', 'user_email', 'preference' , 'answer_num', 'status'];
+  displayedColumns: string[] = ['course', 'user_name', 'user_email', 'answer_num', 'status'];
 
   constructor(
     private applicationService: ApplicationService,

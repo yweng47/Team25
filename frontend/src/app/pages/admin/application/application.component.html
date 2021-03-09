@@ -21,11 +21,6 @@
     <td mat-cell *matCellDef="let element"> {{element.applicant_email}} </td>
   </ng-container>
 
-  <ng-container matColumnDef="preference">
-    <th mat-header-cell *matHeaderCellDef> Preference </th>
-    <td mat-cell *matCellDef="let element"> {{element.preference === 1 ? 'First' : 'Second'}} </td>
-  </ng-container>
-
   <ng-container matColumnDef="answer_num">
     <th mat-header-cell *matHeaderCellDef> Answer Count </th>
     <td mat-cell *matCellDef="let element"> {{element.answers.length}} </td>

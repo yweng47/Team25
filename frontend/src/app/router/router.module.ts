@@ -13,6 +13,7 @@ import { ApplicationComponent as InstructorApplicationComponent } from '../pages
 import { EnrolmentAndHourComponent } from '../pages/chair/enrolment-and-hour/enrolment-and-hour.component';
 import { CourseTaComponent } from '../pages/chair/course-ta/course-ta.component';
 import { TaHourComponent } from '../pages/chair/ta-hour/ta-hour.component';
+import { PreferenceComponent } from '../pages/admin/preference/preference.component';
 
 const routes: Routes = [
   {
@@ -43,6 +44,10 @@ const routes: Routes = [
       {
         path: 'application',
         component: ApplicationComponent
+      },
+      {
+        path: 'preference',
+        component: PreferenceComponent
       }
     ]
   },

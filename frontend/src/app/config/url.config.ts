@@ -14,7 +14,9 @@ const apiUrl = {
   importEnrollmentHours: `${host}/import/enrollmentHour`,
   enrollmentHours: `${host}/instructor/enrollmentHour`,
   courseTA: `${host}/instructor/courseTA`,
-  taHour: `${host}/instructor/taHour`
+  taHour: `${host}/instructor/taHour`,
+  importPreferences: `${host}/import/preference`,
+  preference: `${host}/instructor/preference`,
 };
 
 export default apiUrl;

@@ -4,6 +4,7 @@ const User = require('../schema/user');
 const Course = require('../schema/course');
 const Question = require('../schema/question');
 const Application = require('../schema/application');
+const Preference = require('../schema/preference');
 const EnrolmentHour = require('../schema/enrolmentHour');
 const Allocation = require('../schema/allocation');
 const {genSuccessResponse} = require('../utils/utils');
@@ -194,6 +195,7 @@ router.get('/enrollmentHour', async function(req, res, next) {
 router.post('/autoTAHours', async function(req, res, next) {
 	const enrollmentHours = await EnrolmentHour.find({}).exec();
 	const applications = await Application.find({}).exec();
+	const preferences = await Preference.find({}).exec();
 	const taAllocations = [];
 	// the first assign
 	enrollmentHours.forEach(enrollment => {
@@ -202,14 +204,15 @@ router.post('/autoTAHours', async function(req, res, next) {
 		}
 		const { course, current_ta_hours, allocatedTime } = enrollment;
 		// get all applications which course equal to the enrollment course and preference equal to first choice
-		const firstChoiceApplications = applications.filter(application =>
-			application.course.equals(course) && application.preference === 1
-		);
+		const firstChoiceApplications = applications.filter(application => {
+			const findPrefers = preferences.find(preference => preference.applicant_email === application.applicant_email);
+			return application.course.equals(course) && application.course.equals(findPrefers.choices[0]);
+		});
 		// sort by ranking
 		firstChoiceApplications.sort((a, b) => a.order - b.order);
 		// assign TA hours
 		firstChoiceApplications.forEach(application => {
-			if (current_ta_hours > allocatedTime && current_ta_hours - allocatedTime > 10) {
+			if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime >= 10) {
 				const allocation = {
 					enrollment: enrollment._id,
 					applicant_name: application.applicant_name,
@@ -233,7 +236,7 @@ router.post('/autoTAHours', async function(req, res, next) {
 		otherChoiceApplications.sort((a, b) => a.order - b.order);
 		// assign TA hours
 		otherChoiceApplications.forEach(application => {
-			if (current_ta_hours > allocatedTime && current_ta_hours - allocatedTime > 10) {
+			if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime >= 10) {
 				const assignedAllocation = taAllocations.find(taAllocation => taAllocation.applicant_email === application.applicant_email);
 				if (!assignedAllocation) {
 					const allocation = {
@@ -251,36 +254,37 @@ router.post('/autoTAHours', async function(req, res, next) {
 	});
 	// the third assign
 	enrollmentHours.forEach(enrollment => {
-		const { course, current_ta_hours, allocatedTime } = enrollment;
-		// get all applications which course equal to the enrollment course and not yet assigned
-		const otherChoiceApplications = applications.filter(application =>
-			application.course.equals(course) && !application.allocated
-		);
-		// sort by ranking
-		otherChoiceApplications.sort((a, b) => a.order - b.order);
-		// assign TA hours
-		otherChoiceApplications.forEach(application => {
-			if (current_ta_hours > allocatedTime && current_ta_hours - allocatedTime === 5) {
-				const assignedAllocation = taAllocations.filter(taAllocation =>
-					taAllocation.applicant_email === application.applicant_email);
-				if (assignedAllocation.length === 0 || (assignedAllocation.length === 1 && assignedAllocation[0].hour === 5)) {
-					if (!application.halfAllocated) {
-						application.halfAllocated = true;
-					} else {
-						application.allocated = true;
+			const { course, current_ta_hours, allocatedTime } = enrollment;
+			// get all applications which course equal to the enrollment course and not yet assigned
+			const otherChoiceApplications = applications.filter(application =>
+				application.course.equals(course) && !application.allocated
+			);
+			// sort by ranking
+			otherChoiceApplications.sort((a, b) => a.order - b.order);
+			// assign TA hours
+			otherChoiceApplications.forEach(application => {
+				if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime === 5) {
+					const assignedAllocation = taAllocations.filter(taAllocation =>
+						taAllocation.applicant_email === application.applicant_email);
+					if (assignedAllocation.length === 0 || (assignedAllocation.length === 1 && assignedAllocation[assignedAllocation.length - 1].hour === 5)) {
+						if (!application.halfAllocated) {
+							application.halfAllocated = true;
+						} else {
+							application.allocated = true;
+						}
+						const allocation = {
+							enrollment: enrollment._id,
+							applicant_name: application.applicant_name,
+							applicant_email: application.applicant_email,
+							hour: 5
+						}
+						enrollment.allocatedTime += 5;
+						taAllocations.push(allocation);
 					}
-					const allocation = {
-						enrollment: enrollment._id,
-						applicant_name: application.applicant_name,
-						applicant_email: application.applicant_email,
-						hour: 5
-					}
-					enrollment.allocatedTime += 5;
-					taAllocations.push(allocation);
 				}
-			}
+			});
 		});
-	});
+
 	Allocation.insertMany(taAllocations, (err) => {
 		if (err) {
 			res.json(genErrorResponse(err));
@@ -364,6 +368,21 @@ router.get('/taHour', async function(req, res, next) {
 		}
 	]).exec();
 	return res.json(genSuccessResponse(enrollmentHours));
+});
+
+router.get('/preference', async function(req, res, next) {
+
+	const preferences = await Preference.aggregate([
+		{
+			$lookup: {
+				from: "courses",
+				localField: "choices",
+				foreignField: "_id",
+				as: "courses"
+			}
+		}
+	]).exec();
+	return res.json(genSuccessResponse(preferences));
 });
 
 module.exports = router;
