@@ -10,6 +10,7 @@ import { CourseComponent } from '../pages/instructor/course/course.component';
 import { QuestionComponent } from '../pages/admin/question/question.component';
 import { ApplicationComponent } from '../pages/admin/application/application.component';
 import { ApplicationComponent as InstructorApplicationComponent } from '../pages/instructor/application/application.component';
+import { EnrolmentAndHourComponent } from '../pages/chair/enrolment-and-hour/enrolment-and-hour.component';
 
 const routes: Routes = [
   {
@@ -46,6 +47,17 @@ const routes: Routes = [
   {
     path: 'chair',
     component: ChairComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'enrolmentHour',
+        pathMatch: 'full'
+      },
+      {
+        path: 'enrolmentHour',
+        component: EnrolmentAndHourComponent
+      },
+    ]
   },
   {
     path: 'instructor',

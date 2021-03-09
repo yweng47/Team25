@@ -4,6 +4,7 @@ const User = require('../schema/user');
 const Course = require('../schema/course');
 const Question = require('../schema/question');
 const Application = require('../schema/application');
+const EnrolmentHour = require('../schema/enrolmentHour');
 const {genSuccessResponse} = require('../utils/utils');
 const mongoose = require('mongoose');
 const {genErrorResponse} = require('../utils/utils');
@@ -163,6 +164,30 @@ router.put('/application', async function(req, res, next) {
 	}
 
 	res.json(genSuccessResponse());
+});
+
+
+router.get('/enrolmentHour', async function(req, res, next) {
+	const { course } = req.query;
+
+	const match = {
+		course: course ? ObjectId(course): { $exists: true }
+	};
+
+	const enrolmentHours = await EnrolmentHour.aggregate([
+		{
+			$lookup: {
+				from: "courses",
+				localField: "course",
+				foreignField: "_id",
+				as: "courses"
+			}
+		},
+		{
+			$match: match
+		}
+	]).exec();
+	return res.json(genSuccessResponse(enrolmentHours));
 });
 
 module.exports = router;

@@ -28,6 +28,7 @@
   border-bottom: 1px solid rgba(0,0,0,.12);
   cursor: pointer;
   transition: all 300ms ease;
+  outline: none;
 }
 
 .content .sidenav .drawer-item:hover {
