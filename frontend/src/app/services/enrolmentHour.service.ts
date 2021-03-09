@@ -24,4 +24,8 @@ export class EnrolmentHourService {
       params
     });
   }
+
+  autoTAHours(): Observable<any> {
+    return this.http.post(apiUrl.autoTAHours, {});
+  }
 }
