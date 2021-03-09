@@ -197,48 +197,23 @@ router.post('/autoTAHours', async function(req, res, next) {
 	const applications = await Application.find({}).exec();
 	const preferences = await Preference.find({}).exec();
 	const taAllocations = [];
-	// the first assign
-	enrollmentHours.forEach(enrollment => {
-		if (enrollment.allocatedTime == null) {
-			enrollment.allocatedTime = 0;
-		}
-		const { course, current_ta_hours, allocatedTime } = enrollment;
-		// get all applications which course equal to the enrollment course and preference equal to first choice
-		const firstChoiceApplications = applications.filter(application => {
-			const findPrefers = preferences.find(preference => preference.applicant_email === application.applicant_email);
-			return application.course.equals(course) && application.course.equals(findPrefers.choices[0]);
-		});
-		// sort by ranking
-		firstChoiceApplications.sort((a, b) => a.order - b.order);
-		// assign TA hours
-		firstChoiceApplications.forEach(application => {
-			if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime >= 10) {
-				const allocation = {
-					enrollment: enrollment._id,
-					applicant_name: application.applicant_name,
-					applicant_email: application.applicant_email,
-					hour: 10
-				}
-				enrollment.allocatedTime += 10;
-				application.allocated = true;
-				taAllocations.push(allocation);
+	for (let i = 1; i <= 3; i++) {
+		// the first assign
+		enrollmentHours.forEach(enrollment => {
+			if (enrollment.allocatedTime == null) {
+				enrollment.allocatedTime = 0;
 			}
-		});
-	});
-	// the second assign
-	enrollmentHours.forEach(enrollment => {
-		const { course, current_ta_hours, allocatedTime } = enrollment;
-		// get all applications which course equal to the enrollment course and not yet assigned
-		const otherChoiceApplications = applications.filter(application =>
-			application.course.equals(course) && !application.allocated
-		);
-		// sort by ranking
-		otherChoiceApplications.sort((a, b) => a.order - b.order);
-		// assign TA hours
-		otherChoiceApplications.forEach(application => {
-			if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime >= 10) {
-				const assignedAllocation = taAllocations.find(taAllocation => taAllocation.applicant_email === application.applicant_email);
-				if (!assignedAllocation) {
+			const { course, current_ta_hours, allocatedTime } = enrollment;
+			// get all applications which course equal to the enrollment course and preference equal to first choice
+			const firstChoiceApplications = applications.filter(application => {
+				const findPrefers = preferences.find(preference => preference.applicant_email === application.applicant_email);
+				return application.course.equals(course) && application.course.equals(findPrefers.choices[0]) && application.status === i;
+			});
+			// sort by ranking
+			firstChoiceApplications.sort((a, b) => a.order - b.order);
+			// assign TA hours
+			firstChoiceApplications.forEach(application => {
+				if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime >= 10) {
 					const allocation = {
 						enrollment: enrollment._id,
 						applicant_name: application.applicant_name,
@@ -249,41 +224,68 @@ router.post('/autoTAHours', async function(req, res, next) {
 					application.allocated = true;
 					taAllocations.push(allocation);
 				}
-			}
+			});
 		});
-	});
-	// the third assign
-	enrollmentHours.forEach(enrollment => {
+		// the second assign
+		enrollmentHours.forEach(enrollment => {
 			const { course, current_ta_hours, allocatedTime } = enrollment;
 			// get all applications which course equal to the enrollment course and not yet assigned
 			const otherChoiceApplications = applications.filter(application =>
-				application.course.equals(course) && !application.allocated
+				application.course.equals(course) && !application.allocated && application.status === i
 			);
 			// sort by ranking
 			otherChoiceApplications.sort((a, b) => a.order - b.order);
 			// assign TA hours
 			otherChoiceApplications.forEach(application => {
-				if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime === 5) {
-					const assignedAllocation = taAllocations.filter(taAllocation =>
-						taAllocation.applicant_email === application.applicant_email);
-					if (assignedAllocation.length === 0 || (assignedAllocation.length === 1 && assignedAllocation[assignedAllocation.length - 1].hour === 5)) {
-						if (!application.halfAllocated) {
-							application.halfAllocated = true;
-						} else {
-							application.allocated = true;
-						}
+				if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime >= 10) {
+					const assignedAllocation = taAllocations.find(taAllocation => taAllocation.applicant_email === application.applicant_email);
+					if (!assignedAllocation) {
 						const allocation = {
 							enrollment: enrollment._id,
 							applicant_name: application.applicant_name,
 							applicant_email: application.applicant_email,
-							hour: 5
+							hour: 10
 						}
-						enrollment.allocatedTime += 5;
+						enrollment.allocatedTime += 10;
+						application.allocated = true;
 						taAllocations.push(allocation);
 					}
 				}
 			});
 		});
+		// the third assign
+		enrollmentHours.forEach(enrollment => {
+				const { course, current_ta_hours, allocatedTime } = enrollment;
+				// get all applications which course equal to the enrollment course and not yet assigned
+				const otherChoiceApplications = applications.filter(application =>
+					application.course.equals(course) && !application.allocated && application.status === i
+				);
+				// sort by ranking
+				otherChoiceApplications.sort((a, b) => a.order - b.order);
+				// assign TA hours
+				otherChoiceApplications.forEach(application => {
+					if (current_ta_hours > enrollment.allocatedTime && current_ta_hours - enrollment.allocatedTime === 5) {
+						const assignedAllocation = taAllocations.filter(taAllocation =>
+							taAllocation.applicant_email === application.applicant_email);
+						if (assignedAllocation.length === 0 || (assignedAllocation.length === 1 && assignedAllocation[assignedAllocation.length - 1].hour === 5)) {
+							if (!application.halfAllocated) {
+								application.halfAllocated = true;
+							} else {
+								application.allocated = true;
+							}
+							const allocation = {
+								enrollment: enrollment._id,
+								applicant_name: application.applicant_name,
+								applicant_email: application.applicant_email,
+								hour: 5
+							}
+							enrollment.allocatedTime += 5;
+							taAllocations.push(allocation);
+						}
+					}
+				});
+			});
+	}
 
 	Allocation.insertMany(taAllocations, (err) => {
 		if (err) {
