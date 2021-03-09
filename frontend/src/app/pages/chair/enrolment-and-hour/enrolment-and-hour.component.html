@@ -1,7 +1,7 @@
 <div class="top-bar">
   <div class="mb-5 text-align-right">
     <button  mat-flat-button color="primary" (click)="importBtn.click()">Import</button>
-    <input class="import-btn" type="file" (change)="importEnrolmentHour($event)" #importBtn>
+    <input class="import-btn" type="file" (change)="importEnrollmentHour($event)" #importBtn>
   </div>
 </div>
 <table mat-table [dataSource]="enrolmentHours" class="mat-elevation-z8">

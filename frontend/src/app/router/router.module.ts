@@ -11,6 +11,7 @@ import { QuestionComponent } from '../pages/admin/question/question.component';
 import { ApplicationComponent } from '../pages/admin/application/application.component';
 import { ApplicationComponent as InstructorApplicationComponent } from '../pages/instructor/application/application.component';
 import { EnrolmentAndHourComponent } from '../pages/chair/enrolment-and-hour/enrolment-and-hour.component';
+import { CourseTaComponent } from '../pages/chair/course-ta/course-ta.component';
 
 const routes: Routes = [
   {
@@ -56,6 +57,10 @@ const routes: Routes = [
       {
         path: 'enrolmentHour',
         component: EnrolmentAndHourComponent
+      },
+      {
+        path: 'courseTA',
+        component: CourseTaComponent
       },
     ]
   },

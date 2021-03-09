@@ -19,23 +19,23 @@ export class EnrolmentAndHourComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.getEnrolmentHours();
+    this.getEnrollmentHours();
   }
 
-  getEnrolmentHours(): void {
-    this.enrolmentHourService.getAllEnrolmentHours().subscribe(response => {
+  getEnrollmentHours(): void {
+    this.enrolmentHourService.getAllEnrollmentHours().subscribe(response => {
       if (response.code) {
         this.enrolmentHours = response.data;
       }
     });
   }
 
-  importEnrolmentHour(event): void {
+  importEnrollmentHour(event): void {
     const file = event.currentTarget.files[0];
-    this.enrolmentHourService.importEnrolmentHours(file).subscribe(response => {
+    this.enrolmentHourService.importEnrollmentHours(file).subscribe(response => {
       if (response.code === 200) {
-        this.toastr.success('import enrolment hours success');
-        this.getEnrolmentHours();
+        this.toastr.success('import enrollment hours success');
+        this.getEnrollmentHours();
       } else {
         this.toastr.error(response.message);
       }

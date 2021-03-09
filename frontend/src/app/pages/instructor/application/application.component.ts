@@ -23,11 +23,12 @@ export class ApplicationComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log(1111);
     this.getCourses();
   }
 
   getCourses(): void {
-    const userInfo = this.userService.userInfo;
+    const userInfo = this.userService.getCurrentUser();
     this.courseService.getCourseByUserId(userInfo._id).subscribe(response => {
       if (response.code === 200) {
         this.courses = response.data;
