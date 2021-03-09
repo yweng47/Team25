@@ -7,6 +7,13 @@ import { SignUpComponent } from '../pages/sign-up/sign-up.component';
 import { ChairComponent } from '../pages/chair/chair.component';
 import { InstructorComponent as InstructorAdminComponent } from '../pages/instructor/instructor.component';
 import { CourseComponent } from '../pages/instructor/course/course.component';
+import { QuestionComponent } from '../pages/admin/question/question.component';
+import { ApplicationComponent } from '../pages/admin/application/application.component';
+import { ApplicationComponent as InstructorApplicationComponent } from '../pages/instructor/application/application.component';
+import { EnrolmentAndHourComponent } from '../pages/chair/enrolment-and-hour/enrolment-and-hour.component';
+import { CourseTaComponent } from '../pages/chair/course-ta/course-ta.component';
+import { TaHourComponent } from '../pages/chair/ta-hour/ta-hour.component';
+import { PreferenceComponent } from '../pages/admin/preference/preference.component';
 
 const routes: Routes = [
   {
@@ -29,12 +36,43 @@ const routes: Routes = [
       {
         path: 'instructor',
         component: InstructorComponent
+      },
+      {
+        path: 'question',
+        component: QuestionComponent
+      },
+      {
+        path: 'application',
+        component: ApplicationComponent
+      },
+      {
+        path: 'preference',
+        component: PreferenceComponent
       }
     ]
   },
   {
     path: 'chair',
     component: ChairComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'enrolmentHour',
+        pathMatch: 'full'
+      },
+      {
+        path: 'enrolmentHour',
+        component: EnrolmentAndHourComponent
+      },
+      {
+        path: 'courseTA',
+        component: CourseTaComponent
+      },
+      {
+        path: 'taHour/:courseId',
+        component: TaHourComponent
+      },
+    ]
   },
   {
     path: 'instructor',
@@ -42,8 +80,12 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'course',
+        redirectTo: 'application',
         pathMatch: 'full'
+      },
+      {
+        path: 'application',
+        component: InstructorApplicationComponent
       },
       {
         path: 'course',
