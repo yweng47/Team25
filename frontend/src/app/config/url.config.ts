@@ -7,7 +7,17 @@ const apiUrl = {
   checkToken: `${host}/checkToken`,
   getCourseByCode: `${host}/getCourseByCode`,
   course: `${host}/instructor/course`,
-  notice: `${host}/admin/notice`
+  notice: `${host}/admin/notice`,
+  question: `${host}/instructor/question`,
+  importApplications: `${host}/import/application`,
+  applications: `${host}/instructor/application`,
+  importEnrollmentHours: `${host}/import/enrollmentHour`,
+  enrollmentHours: `${host}/instructor/enrollmentHour`,
+  courseTA: `${host}/instructor/courseTA`,
+  taHour: `${host}/instructor/taHour`,
+  importPreferences: `${host}/import/preference`,
+  preference: `${host}/instructor/preference`,
+  autoTAHours: `${host}/instructor/autoTAHours`
 };
 
 export default apiUrl;

@@ -14,9 +14,21 @@
   <mat-drawer-container class="content" autosize>
     <mat-drawer #drawer class="sidenav" mode="side" [opened]="true">
       <ul class="drawer-list">
-        <li class="drawer-item">
+        <li class="drawer-item" routerLink="/admin/instructor">
           <mat-icon class="vertical-align-middle mr-2">groups</mat-icon>
           <span class="vertical-align-middle">instructors</span>
+        </li>
+        <li class="drawer-item" routerLink="/admin/question">
+          <mat-icon class="vertical-align-middle mr-2">question_answer</mat-icon>
+          <span class="vertical-align-middle">questions</span>
+        </li>
+        <li class="drawer-item" routerLink="/admin/application">
+          <mat-icon class="vertical-align-middle mr-2">assignment</mat-icon>
+          <span class="vertical-align-middle">applications</span>
+        </li>
+        <li class="drawer-item" routerLink="/admin/preference">
+          <mat-icon class="vertical-align-middle mr-2">loyalty</mat-icon>
+          <span class="vertical-align-middle">preferences</span>
         </li>
       </ul>
     </mat-drawer>

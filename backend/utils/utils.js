@@ -23,8 +23,18 @@ function genInvalidParamsResponse(message= 'invalid params') {
 	}
 }
 
+function taHourRound(hour) {
+	if (!Number.isNaN(hour)) {
+		const tHour = Math.floor(hour / 10) * 10;
+		const oHour = hour % 10 >= 5 ? 10 : 5;
+		return tHour + oHour;
+	}
+	return NaN;
+}
+
 module.exports = {
 	genSuccessResponse,
 	genErrorResponse,
-	genInvalidParamsResponse
+	genInvalidParamsResponse,
+	taHourRound
 }

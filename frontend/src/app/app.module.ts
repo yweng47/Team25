@@ -20,6 +20,16 @@ import { InstructorComponent as InstructorAdminComponent } from './pages/instruc
 import { QuillModule } from 'ngx-quill';
 import { CourseComponent } from './pages/instructor/course/course.component';
 import { EditCourseComponent } from './modals/edit-course/edit-course.component';
+import { CourseQuestionsComponent } from './modals/course-questions/course-questions.component';
+import { QuestionComponent } from './pages/admin/question/question.component';
+import { ApplicationComponent } from './pages/admin/application/application.component';
+import { ApplicationComponent as InstructorApplicationComponent } from './pages/instructor/application/application.component';
+import { NgxSortableModule } from 'ngx-sortable';
+import { EnrolmentAndHourComponent } from './pages/chair/enrolment-and-hour/enrolment-and-hour.component';
+import { CourseTaComponent } from './pages/chair/course-ta/course-ta.component';
+import { TaHourComponent } from './pages/chair/ta-hour/ta-hour.component';
+import { TsCourseComponent } from './modals/ts-course/ts-course.component';
+import { PreferenceComponent } from './pages/admin/preference/preference.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +43,16 @@ import { EditCourseComponent } from './modals/edit-course/edit-course.component'
     ChairComponent,
     InstructorAdminComponent,
     CourseComponent,
-    EditCourseComponent
+    EditCourseComponent,
+    CourseQuestionsComponent,
+    QuestionComponent,
+    ApplicationComponent,
+    InstructorApplicationComponent,
+    EnrolmentAndHourComponent,
+    CourseTaComponent,
+    TaHourComponent,
+    TsCourseComponent,
+    PreferenceComponent
   ],
   imports: [
     CommonModule,
@@ -45,7 +64,8 @@ import { EditCourseComponent } from './modals/edit-course/edit-course.component'
     HttpClientModule,
     ToastrModule.forRoot(),
     QuillModule.forRoot(),
-    FormsModule
+    FormsModule,
+    NgxSortableModule
   ],
   providers: [],
   bootstrap: [AppComponent]
