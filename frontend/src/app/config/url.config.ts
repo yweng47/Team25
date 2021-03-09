@@ -6,8 +6,17 @@ const apiUrl = {
   inviteRegister: `${host}/admin/inviteRegister`,
   checkToken: `${host}/checkToken`,
   getCourseByCode: `${host}/getCourseByCode`,
-  getCourseByUser: `${host}/instructor/getCourses`,
-  notice: `${host}/admin/notice`
+  course: `${host}/instructor/course`,
+  notice: `${host}/admin/notice`,
+  question: `${host}/instructor/question`,
+  importApplications: `${host}/import/application`,
+  applications: `${host}/instructor/application`,
+  importEnrollmentHours: `${host}/import/enrollmentHour`,
+  enrollmentHours: `${host}/instructor/enrollmentHour`,
+  courseTA: `${host}/instructor/courseTA`,
+  taHour: `${host}/instructor/taHour`,
+  importPreferences: `${host}/import/preference`,
+  preference: `${host}/instructor/preference`,
 };
 
 export default apiUrl;

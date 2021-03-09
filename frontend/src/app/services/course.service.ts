@@ -18,10 +18,20 @@ export class CourseService {
   }
 
   getCourseByUserId(id: string): Observable<any> {
-    return this.http.get(apiUrl.getCourseByUser, {
+    return this.http.get(apiUrl.course, {
       params: {
         id
       }
+    });
+  }
+
+  getCourseById(id: string): Observable<any> {
+    return this.http.get(apiUrl.course + '/' + id);
+  }
+
+  updateCourse(course: any): Observable<any> {
+    return this.http.put(apiUrl.course , {
+      ...course
     });
   }
 }
