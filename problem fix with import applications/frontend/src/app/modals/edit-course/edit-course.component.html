@@ -1,0 +1,75 @@
+<div class="container">
+  <div class="modal-title">Edit Course</div>
+  <form [formGroup]="validateForm">
+    <div class="modal-content">
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="faculty" placeholder="Faculty" required>
+        <mat-error *ngIf="this.validateForm.controls.faculty.invalid">faculty required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="department" placeholder="Department" required>
+        <mat-error *ngIf="this.validateForm.controls.department.invalid">department required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="subject" placeholder="Subject" required>
+        <mat-error *ngIf="this.validateForm.controls.subject.invalid">subject required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="catalog" placeholder="Catalog" required>
+        <mat-error *ngIf="this.validateForm.controls.catalog.invalid">catalog required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="section" placeholder="Section" required>
+        <mat-error *ngIf="this.validateForm.controls.section.invalid">section required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="description" placeholder="Description" required>
+        <mat-error *ngIf="this.validateForm.controls.description.invalid">description required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="component" placeholder="Component" required>
+        <mat-error *ngIf="this.validateForm.controls.component.invalid">component required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="location" placeholder="Location" required>
+        <mat-error *ngIf="this.validateForm.controls.location.invalid">location required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="mode" placeholder="Mode" required>
+        <mat-error *ngIf="this.validateForm.controls.mode.invalid">mode required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="_class" placeholder="Class" required>
+        <mat-error *ngIf="this.validateForm.controls._class.invalid">class required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="start_date" placeholder="Start Date" required>
+        <mat-error *ngIf="this.validateForm.controls.start_date.invalid">start date required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="end_date" placeholder="End Date" required>
+        <mat-error *ngIf="this.validateForm.controls.end_date.invalid">end date required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="wait_tot" placeholder="Wait Tot" required>
+        <mat-error *ngIf="this.validateForm.controls.wait_tot.invalid">wait tot required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="current_enrolment" placeholder="Current Enrolment">
+        <mat-error *ngIf="this.validateForm.controls.current_enrolment.invalid">current enrolment required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="cap_enrolment" placeholder="Cap Enrolment">
+        <mat-error *ngIf="this.validateForm.controls.cap_enrolment.invalid">cap enrolment required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="modal-field">
+        <input matInput formControlName="full" placeholder="Full" required>
+        <mat-error *ngIf="this.validateForm.controls.full.invalid">full required</mat-error>
+      </mat-form-field>
+    </div>
+    <div mat-dialog-actions class="modal-footer">
+      <button mat-button (click)="onCancel()">Cancel</button>
+      <button mat-flat-button color="primary" type="submit" (click)="onOk()">Submit</button>
+    </div>
+  </form>
+</div>
