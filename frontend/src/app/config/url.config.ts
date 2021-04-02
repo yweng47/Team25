@@ -17,8 +17,7 @@ const apiUrl = {
   taHour: `${host}/instructor/taHour`,
   importPreferences: `${host}/import/preference`,
   preference: `${host}/instructor/preference`,
-  autoTAHours: `${host}/instructor/autoTAHours`,
-  changeUserChair: `${host}/admin/changeUserChair`
+  autoTAHours: `${host}/instructor/autoTAHours`
 };
 
 export default apiUrl;

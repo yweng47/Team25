@@ -11,8 +11,6 @@ const InviteUser = require('../schema/inviteUser');
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require("nodemailer");
 const {sendMail} = require('../utils/mail');
-const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 
 router.get('/user', async function(req, res, next) {
 	const { role } = req.query;
@@ -35,7 +33,7 @@ router.get('/user', async function(req, res, next) {
 		},
 		{
 			$match:{
-				'roles.name': {$in: role.split(',')}
+				'roles.name': {$in: [role]}
 			}
 		}
 	]).exec();
@@ -53,33 +51,6 @@ router.post('/user', async function(req, res, next) {
 		relateCourses
 	});
 	user.save((err) => {
-		if (err) {
-			res.json(genErrorResponse(err));
-		} else {
-			res.json(genSuccessResponse());
-		}
-	});
-});
-
-router.post('/changeUserChair', async function(req, res, next) {
-	const { isChair, id } = req.body;
-
-	if (isChair == null || !id) {
-		return res.join(genInvalidParamsResponse());
-	}
-
-	const users = await User.find({ _id: ObjectId(id) }).exec();
-	const findUser = users[0];
-	const chairRole = await Role.findOne({ name: 'chair' }).exec();
-
-	const isIncludeChair = users[0].roles.includes(chairRole._id);
-	if (isChair && !isIncludeChair) {
-		findUser.roles.push(chairRole._id);
-	} else if (!isChair && isIncludeChair) {
-		findUser.roles.splice(findUser.roles.indexOf(chairRole._id), 1);
-	}
-
-	User.findOneAndUpdate({ _id: findUser._id }, findUser, (err) => {
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {

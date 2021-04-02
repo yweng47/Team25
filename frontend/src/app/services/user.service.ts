@@ -49,13 +49,6 @@ export class UserService {
     });
   }
 
-  changeUserChair(id: string, isChair: boolean): Observable<any> {
-    return this.http.post(apiUrl.changeUserChair, {
-      id,
-      isChair
-    });
-  }
-
   signUp(email, password, name, relateCourses): Observable<any> {
     return this.http.post(apiUrl.user, {
       email,

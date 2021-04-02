@@ -15,17 +15,10 @@
     <td mat-cell *matCellDef="let element"> {{element.name}} </td>
   </ng-container>
 
+  <!-- Symbol Column -->
   <ng-container matColumnDef="relate_courses">
     <th mat-header-cell *matHeaderCellDef> Relate Courses </th>
     <td mat-cell *matCellDef="let element"> {{getCourseNames(element.courses)}} </td>
-  </ng-container>
-
-  <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef> Actions </th>
-    <td mat-cell *matCellDef="let element">
-      <button *ngIf="isChair(element)" mat-button color="primary" (click)="updateChair(element._id, false)">cancel chair</button>
-      <button *ngIf="!isChair(element)" mat-button color="primary" (click)="updateChair(element._id, true)">set chair</button>
-    </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
