@@ -14,6 +14,8 @@ import { EnrolmentAndHourComponent } from '../pages/chair/enrolment-and-hour/enr
 import { CourseTaComponent } from '../pages/chair/course-ta/course-ta.component';
 import { TaHourComponent } from '../pages/chair/ta-hour/ta-hour.component';
 import { PreferenceComponent } from '../pages/admin/preference/preference.component';
+import { CourseHourComponent } from '../pages/instructor/course-hour/course-hour.component';
+import { NeedTaCourseComponent } from '../pages/admin/need-ta-course/need-ta-course.component';
 
 const routes: Routes = [
   {
@@ -48,6 +50,10 @@ const routes: Routes = [
       {
         path: 'preference',
         component: PreferenceComponent
+      },
+      {
+        path: 'taCourse',
+        component: NeedTaCourseComponent
       }
     ]
   },
@@ -90,6 +96,10 @@ const routes: Routes = [
       {
         path: 'course',
         component: CourseComponent
+      },
+      {
+        path: 'course-hour',
+        component: CourseHourComponent
       }
     ]
   },
