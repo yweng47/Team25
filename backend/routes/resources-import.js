@@ -147,41 +147,43 @@ router.post('/preference', upload.single('file'), async function(req, res, next)
 	const preferences = [];
 	for (let i = 1; i < sheetData.length; i++) {
 		const preferenceData = sheetData[i];
-		const [applicantName, applicantEmail, ...choices ] = preferenceData;
-		const applicationMatches = await  Application.find({ applicant_email: applicantEmail }).exec();
-		if (applicationMatches.length === 0) {
-			return res.json(genErrorResponse(null, 'invalid applicant'));
-		}
-		const courseIDs = [];
-		for (let i = 0, l = choices.length; i < l; i++) {
-			const courseCodeMatches = await Course.aggregate([
-				{
-					$addFields: {
-						subjectCode: {
-							$concat: ["$subject", "$catalog"],
-						}
-					}
-				},
-				{
-					$match: {
-						subjectCode: choices[i]
-					}
-				},
-				{
-					$project:{ _id: 1 }
-				}
-			]).exec();
-			if (courseCodeMatches.length === 0) {
-				return res.json(genErrorResponse(null, 'invalid course code'));
+		if (preferenceData.length > 0) {
+			const [applicantName, applicantEmail, ...choices ] = preferenceData;
+			const applicationMatches = await  Application.find({ applicant_email: applicantEmail }).exec();
+			if (applicationMatches.length === 0) {
+				return res.json(genErrorResponse(null, 'invalid applicant'));
 			}
-			courseIDs.push(courseCodeMatches[0]._id);
+			const courseIDs = [];
+			for (let i = 0, l = choices.length; i < l; i++) {
+				const courseCodeMatches = await Course.aggregate([
+					{
+						$addFields: {
+							subjectCode: {
+								$concat: ["$subject", "$catalog"],
+							}
+						}
+					},
+					{
+						$match: {
+							subjectCode: choices[i]
+						}
+					},
+					{
+						$project:{ _id: 1 }
+					}
+				]).exec();
+				if (courseCodeMatches.length === 0) {
+					return res.json(genErrorResponse(null, 'invalid course code'));
+				}
+				courseIDs.push(courseCodeMatches[0]._id);
+			}
+			const preference = new Preference({
+				applicant_email: applicantEmail,
+				applicant_name: applicantName,
+				choices: courseIDs
+			});
+			preferences.push(preference);
 		}
-		const preference = new Preference({
-			applicant_email: applicantEmail,
-			applicant_name: applicantName,
-			choices: courseIDs
-		});
-		preferences.push(preference);
 	}
 	Preference.insertMany(preferences, (err) => {
 		if (err) {

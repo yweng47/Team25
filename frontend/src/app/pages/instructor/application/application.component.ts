@@ -23,7 +23,6 @@ export class ApplicationComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(1111);
     this.getCourses();
   }
 

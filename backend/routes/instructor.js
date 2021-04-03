@@ -172,9 +172,15 @@ router.put('/application', async function(req, res, next) {
 router.get('/enrollmentHour', async function(req, res, next) {
 	const { course } = req.query;
 
-	const match = {
-		course: course ? ObjectId(course): { $exists: true }
-	};
+	let match = { course: { $exists: true } };
+	if (course) {
+		const matchCourses = course.split(",");
+		if (matchCourses.length === 1) {
+			match = { course: ObjectId(matchCourses[0]) };
+		} else if (matchCourses.length > 1) {
+			match = { course: { $in: matchCourses.map(cid => ObjectId(cid)) } }
+		}
+	}
 
 	const enrollmentHours = await EnrolmentHour.aggregate([
 		{
@@ -190,6 +196,24 @@ router.get('/enrollmentHour', async function(req, res, next) {
 		}
 	]).exec();
 	return res.json(genSuccessResponse(enrollmentHours));
+});
+
+router.put('/enrollmentHour', async function(req, res, next) {
+	const enrollmentHoursBody = req.body;
+
+	if (!enrollmentHoursBody) {
+		return res.join(genInvalidParamsResponse());
+	}
+
+	const enrolmentHour = new EnrolmentHour({ ...enrollmentHoursBody })
+
+	EnrolmentHour.findOneAndUpdate({ _id: enrolmentHour._id }, enrolmentHour, (err) => {
+		if (err) {
+			res.json(genErrorResponse(err));
+		} else {
+			res.json(genSuccessResponse());
+		}
+	});
 });
 
 router.post('/autoTAHours', async function(req, res, next) {
