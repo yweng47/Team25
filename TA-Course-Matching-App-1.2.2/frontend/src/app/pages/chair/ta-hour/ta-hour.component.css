@@ -1,0 +1,9 @@
+td.mat-cell, th.mat-header-cell {
+  width: 25%;
+  text-align: center;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+}

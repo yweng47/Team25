@@ -1,0 +1,30 @@
+<div class="modal-title">Assigned TA Courses</div>
+<div class="info" *ngIf="taHours.length > 0">
+  <div class="info-item">
+    <span class="info-label">TA Name:</span>
+    <span class="info-val">{{ taHours[0].applicant_name }}</span>
+  </div>
+  <div class="info-item">
+    <span class="info-label">TA Status:</span>
+    <span class="info-val">{{ applicantStatus[taHours[0].applications[0].status] }}</span>
+  </div>
+</div>
+<table mat-table [dataSource]="taHours" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="course">
+    <th mat-header-cell *matHeaderCellDef> Assigned Course </th>
+    <td mat-cell *matCellDef="let element"> {{element.courses.subject + element.courses.catalog}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="ta_hours">
+    <th mat-header-cell *matHeaderCellDef> Assigned TA Hours </th>
+    <td mat-cell *matCellDef="let element"> {{element.hour}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<div mat-dialog-actions style="justify-content: center;margin-top: 20px">
+  <button mat-flat-button color="primary" (click)="onOk()">OK</button>
+</div>
+
