@@ -5,6 +5,7 @@ const fs = require('fs');
 const Course = require('../schema/course');
 const Application = require('../schema/application');
 const EnrolmentHour = require('../schema/enrolmentHour');
+const Preference = require('../schema/preference');
 const multer = require('multer');
 const { taHourRound, genSuccessResponse, genErrorResponse } = require('../utils/utils')
 const upload = multer();
@@ -93,11 +94,11 @@ router.post('/application', upload.single('file'), async function(req, res, next
 	});
 });
 
-router.post('/enrolmentHour', upload.single('file'), async function(req, res, next) {
+router.post('/enrollmentHour', upload.single('file'), async function(req, res, next) {
 	const file = req.file;
 	const workSheetsFromBuffer = xlsx.parse(file.buffer);
 	const sheetData = workSheetsFromBuffer[0].data;
-	const enrolmentHours = [];
+	const enrollmentHours = [];
 	for (let i = 1; i < sheetData.length; i++) {
 		const applicationData = sheetData[i];
 		const [course, lab_hour, previous_enrollments, previous_ta_hours, current_enrollments] = applicationData;
@@ -120,7 +121,7 @@ router.post('/enrolmentHour', upload.single('file'), async function(req, res, ne
 		}
 		let currentTAHours = previous_ta_hours / previous_enrollments * current_enrollments;
 		currentTAHours = taHourRound(currentTAHours);
-		const enrolmentHour = new EnrolmentHour({
+		const enrollmentHour = new EnrolmentHour({
 			course: courseCodeMatches[0]._id,
 			lab_hour,
 			previous_enrollments,
@@ -128,9 +129,63 @@ router.post('/enrolmentHour', upload.single('file'), async function(req, res, ne
 			current_enrollments,
 			current_ta_hours: currentTAHours
 		});
-		enrolmentHours.push(enrolmentHour);
+		enrollmentHours.push(enrollmentHour);
 	}
-	EnrolmentHour.insertMany(enrolmentHours, (err) => {
+	EnrolmentHour.insertMany(enrollmentHours, (err) => {
+		if (err) {
+			res.json(genErrorResponse(err));
+		} else {
+			res.json(genSuccessResponse());
+		}
+	});
+});
+
+router.post('/preference', upload.single('file'), async function(req, res, next) {
+	const file = req.file;
+	const workSheetsFromBuffer = xlsx.parse(file.buffer);
+	const sheetData = workSheetsFromBuffer[0].data;
+	const preferences = [];
+	for (let i = 1; i < sheetData.length; i++) {
+		const preferenceData = sheetData[i];
+		if (preferenceData.length > 0) {
+			const [applicantName, applicantEmail, ...choices ] = preferenceData;
+			const applicationMatches = await  Application.find({ applicant_email: applicantEmail }).exec();
+			if (applicationMatches.length === 0) {
+				return res.json(genErrorResponse(null, 'invalid applicant'));
+			}
+			const courseIDs = [];
+			for (let i = 0, l = choices.length; i < l; i++) {
+				const courseCodeMatches = await Course.aggregate([
+					{
+						$addFields: {
+							subjectCode: {
+								$concat: ["$subject", "$catalog"],
+							}
+						}
+					},
+					{
+						$match: {
+							subjectCode: choices[i]
+						}
+					},
+					{
+						$project:{ _id: 1 }
+					}
+				]).exec();
+				if (courseCodeMatches.length === 0) {
+					return res.json(genErrorResponse(null, 'invalid course code'));
+				}
+				courseIDs.push(courseCodeMatches[0]._id);
+			}
+			const preference = new Preference({
+				applicant_email: applicantEmail,
+				applicant_name: applicantName,
+				choices: courseIDs
+			});
+			preferences.push(preference);
+		}
+	}
+	Preference.insertMany(preferences, (err) => {
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {

@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../schema/user');
 const Role = require('../schema/role');
 const Notice = require('../schema/notice');
+const TaCourse = require('../schema/taCourse');
 const {genSuccessResponse} = require('../utils/utils');
 const {genErrorResponse} = require('../utils/utils');
 const bcrypt = require('bcryptjs');
@@ -11,6 +12,8 @@ const InviteUser = require('../schema/inviteUser');
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require("nodemailer");
 const {sendMail} = require('../utils/mail');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 router.get('/user', async function(req, res, next) {
 	const { role } = req.query;
@@ -33,7 +36,7 @@ router.get('/user', async function(req, res, next) {
 		},
 		{
 			$match:{
-				'roles.name': {$in: [role]}
+				'roles.name': {$in: role.split(',')}
 			}
 		}
 	]).exec();
@@ -51,6 +54,78 @@ router.post('/user', async function(req, res, next) {
 		relateCourses
 	});
 	user.save((err) => {
+		if (err) {
+			res.json(genErrorResponse(err));
+		} else {
+			res.json(genSuccessResponse());
+		}
+	});
+});
+
+router.get('/taCourse', async function(req, res, next) {
+	const taCourses = await TaCourse.aggregate([
+		{
+			$lookup: {
+				from: "courses",
+				localField: "course",
+				foreignField: "_id",
+				as: "courses"
+			}
+		},
+		{ $unwind: '$courses' },
+		{
+			$lookup: {
+				from: "users",
+				localField: "course",
+				foreignField: "relateCourses",
+				as: "users"
+			}
+		},
+		{ $unwind: '$users' },
+	]);
+	return res.json(genSuccessResponse(taCourses));
+});
+
+router.post('/taCourse', async function(req, res, next) {
+	let taCourseBody = req.body;
+
+	if (!taCourseBody || taCourseBody.length === 0) {
+		return res.join(genInvalidParamsResponse());
+	}
+
+	const taCourse = new TaCourse({
+		...taCourseBody
+	});
+	taCourse.isNew = false;
+
+	taCourse.save((err) => {
+		if (err) {
+			res.json(genErrorResponse(err));
+		} else {
+			res.json(genSuccessResponse());
+		}
+	});
+});
+
+router.post('/changeUserChair', async function(req, res, next) {
+	const { isChair, id } = req.body;
+
+	if (isChair == null || !id) {
+		return res.join(genInvalidParamsResponse());
+	}
+
+	const users = await User.find({ _id: ObjectId(id) }).exec();
+	const findUser = users[0];
+	const chairRole = await Role.findOne({ name: 'chair' }).exec();
+
+	const isIncludeChair = users[0].roles.includes(chairRole._id);
+	if (isChair && !isIncludeChair) {
+		findUser.roles.push(chairRole._id);
+	} else if (!isChair && isIncludeChair) {
+		findUser.roles.splice(findUser.roles.indexOf(chairRole._id), 1);
+	}
+
+	User.findOneAndUpdate({ _id: findUser._id }, findUser, (err) => {
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {

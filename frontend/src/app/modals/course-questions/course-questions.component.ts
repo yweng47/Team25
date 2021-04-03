@@ -27,7 +27,7 @@ export class CourseQuestionsComponent implements OnInit {
   }
 
   getQuestion(): void {
-    const userInfo = this.userService.userInfo;
+    const userInfo = this.userService.getCurrentUser();
     this.questionService.getQuestions(this.data, userInfo._id).subscribe(response => {
       if (response.code === 200) {
         if (response.data && response.data.length > 0) {
@@ -66,7 +66,7 @@ export class CourseQuestionsComponent implements OnInit {
     const invalidQuestions = this.questions.filter(question => !question.valid);
     const questions = this.questions.map(question => question.value);
     if (invalidQuestions.length === 0) {
-      const userInfo = this.userService.userInfo;
+      const userInfo = this.userService.getCurrentUser();
       const question: any = {
         course: this.data,
         user: userInfo._id,

@@ -1,0 +1,21 @@
+.modal-title {
+  margin-bottom: 20px;
+}
+
+.info {
+  margin-bottom: 20px;
+}
+
+.info .info-item {
+  margin: 10px 0;
+}
+
+.info .info-item .info-label {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+td.mat-cell, th.mat-header-cell {
+  width: 50%;
+  text-align: center;
+}

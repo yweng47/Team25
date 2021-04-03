@@ -8,14 +8,15 @@ export class UserService {
 
   userInfo: any = {};
 
-  constructor(private http: HttpClient) {
-    const currentUser = localStorage.getItem('currentUser');
-    if (currentUser) {
-      this.userInfo = JSON.parse(currentUser);
-    }
-  }
+  constructor(private http: HttpClient) {}
 
   getCurrentUser(): any {
+    if (!this.userInfo._id) {
+      const currentUser = localStorage.getItem('currentUser');
+      if (currentUser) {
+        this.userInfo = JSON.parse(currentUser);
+      }
+    }
     return this.userInfo;
   }
 
@@ -45,6 +46,13 @@ export class UserService {
   checkToken(token: string): Observable<any> {
     return this.http.post(apiUrl.checkToken, {
       access_token: token
+    });
+  }
+
+  changeUserChair(id: string, isChair: boolean): Observable<any> {
+    return this.http.post(apiUrl.changeUserChair, {
+      id,
+      isChair
     });
   }
 

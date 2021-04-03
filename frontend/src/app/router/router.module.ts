@@ -11,6 +11,11 @@ import { QuestionComponent } from '../pages/admin/question/question.component';
 import { ApplicationComponent } from '../pages/admin/application/application.component';
 import { ApplicationComponent as InstructorApplicationComponent } from '../pages/instructor/application/application.component';
 import { EnrolmentAndHourComponent } from '../pages/chair/enrolment-and-hour/enrolment-and-hour.component';
+import { CourseTaComponent } from '../pages/chair/course-ta/course-ta.component';
+import { TaHourComponent } from '../pages/chair/ta-hour/ta-hour.component';
+import { PreferenceComponent } from '../pages/admin/preference/preference.component';
+import { CourseHourComponent } from '../pages/instructor/course-hour/course-hour.component';
+import { NeedTaCourseComponent } from '../pages/admin/need-ta-course/need-ta-course.component';
 
 const routes: Routes = [
   {
@@ -41,6 +46,14 @@ const routes: Routes = [
       {
         path: 'application',
         component: ApplicationComponent
+      },
+      {
+        path: 'preference',
+        component: PreferenceComponent
+      },
+      {
+        path: 'taCourse',
+        component: NeedTaCourseComponent
       }
     ]
   },
@@ -56,6 +69,14 @@ const routes: Routes = [
       {
         path: 'enrolmentHour',
         component: EnrolmentAndHourComponent
+      },
+      {
+        path: 'courseTA',
+        component: CourseTaComponent
+      },
+      {
+        path: 'taHour/:courseId',
+        component: TaHourComponent
       },
     ]
   },
@@ -75,6 +96,10 @@ const routes: Routes = [
       {
         path: 'course',
         component: CourseComponent
+      },
+      {
+        path: 'course-hour',
+        component: CourseHourComponent
       }
     ]
   },

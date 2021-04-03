@@ -26,6 +26,13 @@ import { ApplicationComponent } from './pages/admin/application/application.comp
 import { ApplicationComponent as InstructorApplicationComponent } from './pages/instructor/application/application.component';
 import { NgxSortableModule } from 'ngx-sortable';
 import { EnrolmentAndHourComponent } from './pages/chair/enrolment-and-hour/enrolment-and-hour.component';
+import { CourseTaComponent } from './pages/chair/course-ta/course-ta.component';
+import { TaHourComponent } from './pages/chair/ta-hour/ta-hour.component';
+import { TsCourseComponent } from './modals/ts-course/ts-course.component';
+import { PreferenceComponent } from './pages/admin/preference/preference.component';
+import { CourseHourComponent } from './pages/instructor/course-hour/course-hour.component';
+import { EditTaHoursComponent } from './modals/edit-ta-hours/edit-ta-hours.component';
+import { NeedTaCourseComponent } from './pages/admin/need-ta-course/need-ta-course.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +51,14 @@ import { EnrolmentAndHourComponent } from './pages/chair/enrolment-and-hour/enro
     QuestionComponent,
     ApplicationComponent,
     InstructorApplicationComponent,
-    EnrolmentAndHourComponent
+    EnrolmentAndHourComponent,
+    CourseTaComponent,
+    TaHourComponent,
+    TsCourseComponent,
+    PreferenceComponent,
+    CourseHourComponent,
+    EditTaHoursComponent,
+    NeedTaCourseComponent
   ],
   imports: [
     CommonModule,

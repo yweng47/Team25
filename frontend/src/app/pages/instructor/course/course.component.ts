@@ -25,7 +25,7 @@ export class CourseComponent implements OnInit {
   }
 
   getCourses(): void {
-    const userInfo = this.userService.userInfo;
+    const userInfo = this.userService.getCurrentUser();
     this.courseService.getCourseByUserId(userInfo._id).subscribe(response => {
       if (response.code === 200) {
         this.courses = response.data;

@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [],
@@ -31,6 +32,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatSlideToggleModule,
     MatSidenavModule,
     MatMenuModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     MatIconModule,
@@ -46,7 +48,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatSelectModule,
     MatSlideToggleModule,
     MatSidenavModule,
-    MatMenuModule
+    MatMenuModule,
+    MatProgressSpinnerModule,
   ]
 })
 export class MaterialModule { }
