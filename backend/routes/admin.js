@@ -53,6 +53,14 @@ router.post('/user', async function(req, res, next) {
 		roles,
 		relateCourses
 	});
+	// auto insert course need ta collection
+	for (let i = 0, l = relateCourses.length; i < l; i++) {
+		const taCourse = new TaCourse({
+			course: relateCourses[i],
+			need_ta: true
+		});
+		await taCourse.save();
+	}
 	user.save((err) => {
 		if (err) {
 			res.json(genErrorResponse(err));
@@ -82,7 +90,7 @@ router.get('/taCourse', async function(req, res, next) {
 			}
 		},
 		{ $unwind: '$users' },
-	]);
+	]).exec();
 	return res.json(genSuccessResponse(taCourses));
 });
 

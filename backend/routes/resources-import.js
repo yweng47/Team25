@@ -6,6 +6,7 @@ const Course = require('../schema/course');
 const Application = require('../schema/application');
 const EnrolmentHour = require('../schema/enrolmentHour');
 const Preference = require('../schema/preference');
+const TaCourse = require('../schema/taCourse');
 const multer = require('multer');
 const { taHourRound, genSuccessResponse, genErrorResponse } = require('../utils/utils')
 const upload = multer();
@@ -74,6 +75,10 @@ router.post('/application', upload.single('file'), async function(req, res, next
 		]).exec();
 		if (courseCodeMatches.length === 0) {
 			return res.json(genErrorResponse(null, 'invalid course code'));
+		}
+		const needTaCourse = await TaCourse.findOne({ course: courseCodeMatches[0]._id }).exec();
+		if (!needTaCourse.need_ta) {
+			return res.json(genErrorResponse(null, 'No TA are required for the course'));
 		}
 		const application = new Application({
 			course: courseCodeMatches[0]._id,

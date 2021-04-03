@@ -33,6 +33,8 @@ import { PreferenceComponent } from './pages/admin/preference/preference.compone
 import { CourseHourComponent } from './pages/instructor/course-hour/course-hour.component';
 import { EditTaHoursComponent } from './modals/edit-ta-hours/edit-ta-hours.component';
 import { NeedTaCourseComponent } from './pages/admin/need-ta-course/need-ta-course.component';
+import { InstructorCourseTaComponent } from './pages/instructor/instructor-course-ta/instructor-course-ta.component';
+import { InstructorTaHourComponent } from './pages/instructor/instructor-ta-hour/instructor-ta-hour.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +60,9 @@ import { NeedTaCourseComponent } from './pages/admin/need-ta-course/need-ta-cour
     PreferenceComponent,
     CourseHourComponent,
     EditTaHoursComponent,
-    NeedTaCourseComponent
+    NeedTaCourseComponent,
+    InstructorCourseTaComponent,
+    InstructorTaHourComponent
   ],
   imports: [
     CommonModule,

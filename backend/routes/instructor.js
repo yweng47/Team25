@@ -7,6 +7,7 @@ const Application = require('../schema/application');
 const Preference = require('../schema/preference');
 const EnrolmentHour = require('../schema/enrolmentHour');
 const Allocation = require('../schema/allocation');
+const Review = require('../schema/review');
 const {genSuccessResponse} = require('../utils/utils');
 const mongoose = require('mongoose');
 const {genErrorResponse} = require('../utils/utils');
@@ -324,6 +325,12 @@ router.post('/autoTAHours', async function(req, res, next) {
 });
 
 router.get('/courseTA', async function(req, res, next) {
+	const { userId } = req.query;
+	const match = {};
+	if (userId) {
+		match._id = ObjectId(userId)
+	}
+
 	const enrollmentHours = await User.aggregate([
 		{
 			$lookup: {
@@ -349,6 +356,9 @@ router.get('/courseTA', async function(req, res, next) {
 				foreignField: "enrollment",
 				as: "allocations"
 			}
+		},
+		{
+			$match: match
 		}
 	]).exec();
 	return res.json(genSuccessResponse(enrollmentHours));
@@ -412,6 +422,37 @@ router.get('/preference', async function(req, res, next) {
 		}
 	]).exec();
 	return res.json(genSuccessResponse(preferences));
+});
+
+router.get('/review', async function(req, res, next) {
+	const { userId } = req.query;
+
+	if (!userId) {
+		return res.join(genInvalidParamsResponse());
+	}
+
+	const review = await Review.findOne({ user: ObjectId(userId) }).exec();
+	return res.json(genSuccessResponse(review));
+});
+
+router.post('/review', async function(req, res, next) {
+	const reviewBody = req.body;
+
+	if (!reviewBody) {
+		return res.join(genInvalidParamsResponse());
+	}
+
+	const review = new Review({
+		...reviewBody
+	});
+
+	review.save((err) => {
+		if (err) {
+			res.json(genErrorResponse(err));
+		} else {
+			res.json(genSuccessResponse());
+		}
+	});
 });
 
 module.exports = router;

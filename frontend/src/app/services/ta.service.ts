@@ -9,8 +9,14 @@ export class TAService {
   constructor(private http: HttpClient) {
   }
 
-  getCourseTA(): Observable<any> {
-    return this.http.get(apiUrl.courseTA);
+  getCourseTA(userId?: string): Observable<any> {
+    const params: any = {};
+    if (userId) {
+      params.userId = userId;
+    }
+    return this.http.get(apiUrl.courseTA, {
+      params
+    });
   }
 
   getTAHours(courseId?: string, email?: string): Observable<any> {
