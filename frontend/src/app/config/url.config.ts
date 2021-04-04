@@ -21,6 +21,8 @@ const apiUrl = {
   changeUserChair: `${host}/admin/changeUserChair`,
   taCourse: `${host}/admin/taCourse`,
   review: `${host}/instructor/review`,
+  restTas: `${host}/instructor/restTas`,
+  allocation: `${host}/instructor/allocation`
 };
 
 export default apiUrl;

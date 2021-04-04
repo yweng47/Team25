@@ -21,4 +21,16 @@ export class ReviewService {
       ...review
     });
   }
+
+  getRestTas(courseId: string): Observable<any> {
+    return this.http.get(apiUrl.restTas, {
+      params: {
+        courseId
+      }
+    });
+  }
+
+  getAllocation(): Observable<any> {
+    return this.http.get(apiUrl.allocation);
+  }
 }

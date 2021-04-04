@@ -31,4 +31,29 @@ export class TAService {
       params
     });
   }
+
+  assignTAHour(name: string, email: string, hour: string, enrollment: string): Observable<any> {
+    return this.http.post(apiUrl.taHour, {
+      name,
+      email,
+      hour,
+      enrollment
+    });
+  }
+
+  updateTAHour(id: string, hour: string, enrollment: string): Observable<any> {
+    return this.http.put(apiUrl.taHour, {
+      id,
+      hour,
+      enrollment
+    });
+  }
+
+  deleteTAHour(id: string): Observable<any> {
+    return this.http.delete(apiUrl.taHour, {
+      params: {
+        id
+      }
+    });
+  }
 }

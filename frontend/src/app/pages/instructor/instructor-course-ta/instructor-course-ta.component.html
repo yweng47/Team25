@@ -25,6 +25,10 @@
     <th mat-header-cell *matHeaderCellDef> Actions </th>
     <td mat-cell *matCellDef="let element">
       <button mat-button color="primary" (click)="goTAHours(element.courses[0]._id)">Detail</button>
+      <ng-container *ngIf="hasReview(element.courses[0]._id)">
+        <button mat-button color="primary" (click)="approveCourseTa(element)">Accept</button>
+        <button mat-button color="primary" (click)="rejectCourseTa(element)">Reject</button>
+      </ng-container>
     </td>
   </ng-container>
 

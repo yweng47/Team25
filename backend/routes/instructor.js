@@ -18,7 +18,7 @@ router.get('/course', async function(req, res, next) {
 	const { id } = req.query;
 
 	if (!id) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	let courses = await User.aggregate([
@@ -52,7 +52,7 @@ router.get('/course/:id', async function(req, res, next) {
 	const { id } = req.params;
 
 	if (!id) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const course = await Course.findOne({ _id: id }).exec();
@@ -63,7 +63,7 @@ router.put('/course', async function(req, res, next) {
 	const courseBody = req.body;
 
 	if (!courseBody) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const course = new Course({ ...courseBody })
@@ -117,7 +117,7 @@ router.post('/question', async function(req, res, next) {
 	const questionBody = req.body;
 
 	if (!questionBody) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const question = new Question({ ...questionBody })
@@ -158,7 +158,7 @@ router.put('/application', async function(req, res, next) {
 	const applications = req.body;
 
 	if (!applications) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	for (let i = 0, l = applications.length; i < l; i++) {
@@ -203,7 +203,7 @@ router.put('/enrollmentHour', async function(req, res, next) {
 	const enrollmentHoursBody = req.body;
 
 	if (!enrollmentHoursBody) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const enrolmentHour = new EnrolmentHour({ ...enrollmentHoursBody })
@@ -409,6 +409,90 @@ router.get('/taHour', async function(req, res, next) {
 	return res.json(genSuccessResponse(enrollmentHours));
 });
 
+
+router.post('/taHour', async function(req, res, next) {
+	const { email, name, hour, enrollment } = req.body;
+
+	if (!email || !name || !hour || !enrollment) {
+		return res.json(genInvalidParamsResponse());
+	}
+	const enrolmentHour = await EnrolmentHour.findOne({ _id: ObjectId(enrollment) }).exec();
+	if (enrolmentHour) {
+		const currentTAHours = enrolmentHour.current_ta_hours;
+		const allocations = await Allocation.find({ enrollment }).exec();
+		const currentTotalHours = allocations.reduce((total, allocation) => {
+			return total += allocation.hour;
+		}, 0);
+		if (currentTotalHours + hour > currentTAHours) {
+			return res.json(genErrorResponse(null, 'The specified hour exceeds the course requirement'));
+		}
+		const allocation = new Allocation({
+			enrollment,
+			applicant_name: name,
+			applicant_email: email,
+			hour
+		});
+		allocation.save((err) => {
+			if (err) {
+				res.json(genErrorResponse(err));
+			} else {
+				res.json(genSuccessResponse());
+			}
+		});
+	} else {
+		return res.json(genErrorResponse(null, 'error enrollment id'));
+	}
+});
+
+router.put('/taHour', async function(req, res, next) {
+	const { id, hour, enrollment } = req.body;
+
+	if (!id || !hour || !enrollment) {
+		return res.json(genInvalidParamsResponse());
+	}
+	const enrolmentHour = await EnrolmentHour.findOne({ _id: ObjectId(enrollment) }).exec();
+	if (enrolmentHour) {
+		let currentAllocation;
+		const currentTAHours = enrolmentHour.current_ta_hours;
+		const allocations = await Allocation.find({ enrollment }).exec();
+		const currentTotalHours = allocations.reduce((total, allocation) => {
+			if (allocation._id.toString() !== id) {
+				return total += allocation.hour;
+			} else {
+				currentAllocation = allocation;
+				return total;
+			}
+		}, 0);
+		if (currentTotalHours + hour > currentTAHours) {
+			return res.json(genErrorResponse(null, 'The specified hour exceeds the course requirement'));
+		}
+		if (currentAllocation) {
+			currentAllocation.hour = hour;
+			Allocation.findOneAndUpdate({ _id: currentAllocation._id }, currentAllocation, (err) => {
+				if (err) {
+					res.json(genErrorResponse(err));
+				} else {
+					res.json(genSuccessResponse());
+				}
+			});
+		} else {
+			genErrorResponse(null, 'error allocation id')
+		}
+	} else {
+		return res.json(genErrorResponse(null, 'error enrollment id'));
+	}
+});
+
+router.delete('/taHour', async function(req, res, next) {
+	const { id } = req.query;
+	if (!id) {
+		return res.json(genInvalidParamsResponse());
+	}
+	await Allocation.deleteOne({ _id: ObjectId(id) }).exec();
+	return res.json(genSuccessResponse(preferences));
+});
+
+
 router.get('/preference', async function(req, res, next) {
 
 	const preferences = await Preference.aggregate([
@@ -428,10 +512,10 @@ router.get('/review', async function(req, res, next) {
 	const { userId } = req.query;
 
 	if (!userId) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
-	const review = await Review.findOne({ user: ObjectId(userId) }).exec();
+	const review = await Review.find({ user: ObjectId(userId) }).exec();
 	return res.json(genSuccessResponse(review));
 });
 
@@ -439,7 +523,7 @@ router.post('/review', async function(req, res, next) {
 	const reviewBody = req.body;
 
 	if (!reviewBody) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const review = new Review({
@@ -453,6 +537,37 @@ router.post('/review', async function(req, res, next) {
 			res.json(genSuccessResponse());
 		}
 	});
+});
+
+router.get('/restTas', async function(req, res, next) {
+	const { courseId } = req.query;
+
+	if (!courseId) {
+		return res.json(genInvalidParamsResponse());
+	}
+
+	const applications = await Application.aggregate([
+		{
+			$lookup: {
+				from: "enrolment_hours",
+				localField: "course",
+				foreignField: "course",
+				as: "enrollment_hours"
+			}
+		},
+		{ $unwind: '$enrollment_hours' },
+		{
+			$match: {
+				course: ObjectId(courseId)
+			}
+		}
+	]).exec();
+	return res.json(genSuccessResponse(applications));
+});
+
+router.get('/allocation', async function(req, res, next) {
+	const allocations = await Allocation.find({}).exec();
+	return res.json(genSuccessResponse(allocations));
 });
 
 module.exports = router;

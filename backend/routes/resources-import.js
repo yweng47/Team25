@@ -51,6 +51,7 @@ router.post('/application', upload.single('file'), async function(req, res, next
 	const workSheetsFromBuffer = xlsx.parse(file.buffer);
 	const sheetData = workSheetsFromBuffer[0].data;
 	const applications = [];
+	const noNeedTaCourse = [];
 	for (let i = 1; i < sheetData.length; i++) {
 		const applicationData = sheetData[i];
 		const answers = [];
@@ -74,11 +75,14 @@ router.post('/application', upload.single('file'), async function(req, res, next
 			},
 		]).exec();
 		if (courseCodeMatches.length === 0) {
-			return res.json(genErrorResponse(null, 'invalid course code'));
+			return res.json(genErrorResponse(null, `invalid course code ${applicationData[0]}`));
 		}
 		const needTaCourse = await TaCourse.findOne({ course: courseCodeMatches[0]._id }).exec();
 		if (!needTaCourse.need_ta) {
-			return res.json(genErrorResponse(null, 'No TA are required for the course'));
+			if (noNeedTaCourse.indexOf(applicationData[0]) === -1) {
+				noNeedTaCourse.push(applicationData[0]);
+			}
+			continue;
 		}
 		const application = new Application({
 			course: courseCodeMatches[0]._id,
@@ -94,6 +98,10 @@ router.post('/application', upload.single('file'), async function(req, res, next
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {
+			if (noNeedTaCourse.length > 0) {
+				const courseStr = noNeedTaCourse.join(',');
+				return res.json(genErrorResponse(null, `No TA are required for ${courseStr}`));
+			}
 			res.json(genSuccessResponse());
 		}
 	});

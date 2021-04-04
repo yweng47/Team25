@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TAService } from '../../../services/ta.service';
 import * as XLSX from 'xlsx';
 import { sheet2blob, startToDownload } from '../../../utils/utils';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-course-ta',
@@ -15,7 +15,8 @@ export class CourseTaComponent implements OnInit {
 
   constructor(
     private taService: TAService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -47,6 +48,6 @@ export class CourseTaComponent implements OnInit {
   }
 
   goTAHours(courseId: string): void {
-    this.router.navigate(['/chair/taHour/' + courseId]);
+    this.router.navigate(['../taHour/' + courseId], {relativeTo: this.route});
   }
 }

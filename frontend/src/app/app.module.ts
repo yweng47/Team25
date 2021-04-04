@@ -35,6 +35,9 @@ import { EditTaHoursComponent } from './modals/edit-ta-hours/edit-ta-hours.compo
 import { NeedTaCourseComponent } from './pages/admin/need-ta-course/need-ta-course.component';
 import { InstructorCourseTaComponent } from './pages/instructor/instructor-course-ta/instructor-course-ta.component';
 import { InstructorTaHourComponent } from './pages/instructor/instructor-ta-hour/instructor-ta-hour.component';
+import { AssignTaComponent } from './modals/assign-ta/assign-ta.component';
+import { ApproveRejectTaCourseComponent } from './modals/approve-reject-ta-course/approve-reject-ta-course.component';
+import { InstructorReviewComponent } from './pages/chair/instructor-review/instructor-review.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +65,10 @@ import { InstructorTaHourComponent } from './pages/instructor/instructor-ta-hour
     EditTaHoursComponent,
     NeedTaCourseComponent,
     InstructorCourseTaComponent,
-    InstructorTaHourComponent
+    InstructorTaHourComponent,
+    AssignTaComponent,
+    ApproveRejectTaCourseComponent,
+    InstructorReviewComponent
   ],
   imports: [
     CommonModule,

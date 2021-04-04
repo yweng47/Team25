@@ -6,6 +6,9 @@ import { sheet2blob, startToDownload } from '../../../utils/utils';
 import { UserService } from '../../../services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { ReviewService } from '../../../services/review.service';
+import { TA_COURSE_STATUS } from '../../../config/ta-course-status';
+import { MatDialog } from '@angular/material/dialog';
+import { ApproveRejectTaCourseComponent } from '../../../modals/approve-reject-ta-course/approve-reject-ta-course.component';
 
 @Component({
   selector: 'app-instructor-course-ta',
@@ -23,6 +26,7 @@ export class InstructorCourseTaComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private toastr: ToastrService,
+    private dialog: MatDialog,
     private reviewService: ReviewService
   ) { }
 
@@ -69,6 +73,34 @@ export class InstructorCourseTaComponent implements OnInit {
     this.router.navigate(['/instructor/taHour/' + courseId]);
   }
 
+  approveCourseTa(courseTA: any): void {
+    const userInfo = this.userService.getCurrentUser();
+    const review = {
+      user: userInfo._id,
+      review: TA_COURSE_STATUS.APPROVE,
+      course: courseTA.courses[0]._id
+    };
+    this.reviewService.addReview(review).subscribe(response => {
+      if (response.code === 200) {
+        this.toastr.success('success accept');
+        this.getReview();
+      }
+    });
+  }
+
+  rejectCourseTa(courseTA: any): void {
+    const dialogRef = this.dialog.open(ApproveRejectTaCourseComponent, {
+      width: '500px',
+      data: courseTA.courses[0]._id
+    });
+
+    dialogRef.afterClosed().subscribe((response: any) => {
+      if (response) {
+        this.getReview();
+      }
+    });
+  }
+
   reviewCourseTa(accept: boolean): void {
     if (this.courseTAs.length > 0) {
       const userInfo = this.userService.getCurrentUser();
@@ -84,6 +116,12 @@ export class InstructorCourseTaComponent implements OnInit {
       });
     } else {
       this.toastr.warning('empty ta courses');
+    }
+  }
+
+  hasReview(courseId: string): boolean {
+    if (Array.isArray(this.review)) {
+      return !this.review.find(r => r.course === courseId);
     }
   }
 }

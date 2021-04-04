@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="modal-title">{{ data.taHour ? 'Update' : 'Add' }} TA Hours</div>
+  <div class="modal-content">
+    <form class="login-form" [formGroup]="validateForm">
+      <mat-form-field>
+        <input matInput formControlName="email" placeholder="Enter TA Email" required>
+        <mat-error *ngIf="validateForm.controls.email.invalid">
+          {{ validateForm.controls.email.hasError('required') ? 'email required':
+          validateForm.controls.email.hasError('email') ? 'invalid email': ''
+          }}
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput formControlName="name" placeholder="Enter TA Name" required>
+        <mat-error *ngIf="validateForm.controls.name.invalid">
+          name required
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-select formControlName="hour" placeholder="Select TA Hour" required>
+          <mat-option [value]="5">5</mat-option>
+          <mat-option [value]="10">10</mat-option>
+        </mat-select>
+        <mat-error *ngIf="validateForm.controls.hour.invalid">
+          {{ validateForm.controls.hour.hasError('required') ? 'hour required':
+          validateForm.controls.hour.hasError('pattern') ? 'invalid hour': ''
+          }}
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </div>
+  <div mat-dialog-actions class="modal-footer">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="onOk()">Submit</button>
+  </div>
+</div>
+
