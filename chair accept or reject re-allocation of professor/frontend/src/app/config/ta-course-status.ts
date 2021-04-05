@@ -1,0 +1,7 @@
+export enum TA_COURSE_STATUS {
+  INIT,
+  APPROVE,
+  REJECT,
+  CHAIR_APPROVE,
+  CHAIR_REJECT
+}

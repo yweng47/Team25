@@ -1,0 +1,36 @@
+.section {
+  display: flex;
+  align-items: center;
+}
+
+.section .title {
+  font-size: 20px;
+  margin-right: 20px;
+}
+
+.section .right {
+  display: flex;
+  align-items: center;
+}
+
+.section .right button + button {
+  margin-left: 20px;
+}
+
+.section + .section {
+  margin-top: 20px;
+}
+
+ngx-sortable {
+  width: 100%;
+}
+
+ngx-sortable .sortable-list-item {
+  padding: 10px;
+  border-bottom: 1px solid #e1e1e1;
+  cursor: pointer;
+}
+
+ngx-sortable .sortable-list-item:hover {
+  background-color: rgba(63, 81, 181,.12);
+}
