@@ -1,0 +1,13 @@
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.top-bar button + button {
+  margin-left: 10px;
+}
+
+td.mat-cell, th.mat-header-cell {
+  width: 33.33%;
+  text-align: center;
+}

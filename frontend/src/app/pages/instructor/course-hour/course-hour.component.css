@@ -1,0 +1,4 @@
+td.mat-cell, th.mat-header-cell {
+  width: 50%;
+  text-align: center;
+}

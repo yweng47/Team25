@@ -33,10 +33,10 @@ export class ApplicationComponent implements OnInit {
     this.applicationService.importApplications(file).subscribe(response => {
       if (response.code === 200) {
         this.toastr.success('import application success');
-        this.getApplications();
       } else {
         this.toastr.error(response.message);
       }
+      this.getApplications();
     });
   }
 }

@@ -28,4 +28,10 @@ export class EnrolmentHourService {
   autoTAHours(): Observable<any> {
     return this.http.post(apiUrl.autoTAHours, {});
   }
+
+  updateEnrollmentHours(enrollmentHours: any): Observable<any> {
+    return this.http.put(apiUrl.enrollmentHours , {
+      ...enrollmentHours
+    });
+  }
 }

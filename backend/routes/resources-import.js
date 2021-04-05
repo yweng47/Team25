@@ -6,6 +6,7 @@ const Course = require('../schema/course');
 const Application = require('../schema/application');
 const EnrolmentHour = require('../schema/enrolmentHour');
 const Preference = require('../schema/preference');
+const TaCourse = require('../schema/taCourse');
 const multer = require('multer');
 const { taHourRound, genSuccessResponse, genErrorResponse } = require('../utils/utils')
 const upload = multer();
@@ -50,6 +51,7 @@ router.post('/application', upload.single('file'), async function(req, res, next
 	const workSheetsFromBuffer = xlsx.parse(file.buffer);
 	const sheetData = workSheetsFromBuffer[0].data;
 	const applications = [];
+	const noNeedTaCourse = [];
 	for (let i = 1; i < sheetData.length; i++) {
 		const applicationData = sheetData[i];
 		const answers = [];
@@ -73,7 +75,14 @@ router.post('/application', upload.single('file'), async function(req, res, next
 			},
 		]).exec();
 		if (courseCodeMatches.length === 0) {
-			return res.json(genErrorResponse(null, 'invalid course code'));
+			return res.json(genErrorResponse(null, `invalid course code ${applicationData[0]}`));
+		}
+		const needTaCourse = await TaCourse.findOne({ course: courseCodeMatches[0]._id }).exec();
+		if (!needTaCourse.need_ta) {
+			if (noNeedTaCourse.indexOf(applicationData[0]) === -1) {
+				noNeedTaCourse.push(applicationData[0]);
+			}
+			continue;
 		}
 		const application = new Application({
 			course: courseCodeMatches[0]._id,
@@ -89,6 +98,10 @@ router.post('/application', upload.single('file'), async function(req, res, next
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {
+			if (noNeedTaCourse.length > 0) {
+				const courseStr = noNeedTaCourse.join(',');
+				return res.json(genErrorResponse(null, `No TA are required for ${courseStr}`));
+			}
 			res.json(genSuccessResponse());
 		}
 	});
@@ -147,41 +160,43 @@ router.post('/preference', upload.single('file'), async function(req, res, next)
 	const preferences = [];
 	for (let i = 1; i < sheetData.length; i++) {
 		const preferenceData = sheetData[i];
-		const [applicantName, applicantEmail, ...choices ] = preferenceData;
-		const applicationMatches = await  Application.find({ applicant_email: applicantEmail }).exec();
-		if (applicationMatches.length === 0) {
-			return res.json(genErrorResponse(null, 'invalid applicant'));
-		}
-		const courseIDs = [];
-		for (let i = 0, l = choices.length; i < l; i++) {
-			const courseCodeMatches = await Course.aggregate([
-				{
-					$addFields: {
-						subjectCode: {
-							$concat: ["$subject", "$catalog"],
-						}
-					}
-				},
-				{
-					$match: {
-						subjectCode: choices[i]
-					}
-				},
-				{
-					$project:{ _id: 1 }
-				}
-			]).exec();
-			if (courseCodeMatches.length === 0) {
-				return res.json(genErrorResponse(null, 'invalid course code'));
+		if (preferenceData.length > 0) {
+			const [applicantName, applicantEmail, ...choices ] = preferenceData;
+			const applicationMatches = await  Application.find({ applicant_email: applicantEmail }).exec();
+			if (applicationMatches.length === 0) {
+				return res.json(genErrorResponse(null, 'invalid applicant'));
 			}
-			courseIDs.push(courseCodeMatches[0]._id);
+			const courseIDs = [];
+			for (let i = 0, l = choices.length; i < l; i++) {
+				const courseCodeMatches = await Course.aggregate([
+					{
+						$addFields: {
+							subjectCode: {
+								$concat: ["$subject", "$catalog"],
+							}
+						}
+					},
+					{
+						$match: {
+							subjectCode: choices[i]
+						}
+					},
+					{
+						$project:{ _id: 1 }
+					}
+				]).exec();
+				if (courseCodeMatches.length === 0) {
+					return res.json(genErrorResponse(null, 'invalid course code'));
+				}
+				courseIDs.push(courseCodeMatches[0]._id);
+			}
+			const preference = new Preference({
+				applicant_email: applicantEmail,
+				applicant_name: applicantName,
+				choices: courseIDs
+			});
+			preferences.push(preference);
 		}
-		const preference = new Preference({
-			applicant_email: applicantEmail,
-			applicant_name: applicantName,
-			choices: courseIDs
-		});
-		preferences.push(preference);
 	}
 	Preference.insertMany(preferences, (err) => {
 		if (err) {

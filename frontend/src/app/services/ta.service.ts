@@ -9,8 +9,14 @@ export class TAService {
   constructor(private http: HttpClient) {
   }
 
-  getCourseTA(): Observable<any> {
-    return this.http.get(apiUrl.courseTA);
+  getCourseTA(userId?: string): Observable<any> {
+    const params: any = {};
+    if (userId) {
+      params.userId = userId;
+    }
+    return this.http.get(apiUrl.courseTA, {
+      params
+    });
   }
 
   getTAHours(courseId?: string, email?: string): Observable<any> {
@@ -23,6 +29,31 @@ export class TAService {
     }
     return this.http.get(apiUrl.taHour, {
       params
+    });
+  }
+
+  assignTAHour(name: string, email: string, hour: string, enrollment: string): Observable<any> {
+    return this.http.post(apiUrl.taHour, {
+      name,
+      email,
+      hour,
+      enrollment
+    });
+  }
+
+  updateTAHour(id: string, hour: string, enrollment: string): Observable<any> {
+    return this.http.put(apiUrl.taHour, {
+      id,
+      hour,
+      enrollment
+    });
+  }
+
+  deleteTAHour(id: string): Observable<any> {
+    return this.http.delete(apiUrl.taHour, {
+      params: {
+        id
+      }
     });
   }
 }

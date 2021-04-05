@@ -12,7 +12,7 @@ import { InviteComponent } from '../../../modals/invite/invite.component';
 })
 export class InstructorComponent implements OnInit {
   instructors: User[] = [];
-  displayedColumns: string[] = ['email', 'name', 'relate_courses'];
+  displayedColumns: string[] = ['email', 'name', 'relate_courses', 'actions'];
 
   constructor(
     private userService: UserService,
@@ -25,7 +25,8 @@ export class InstructorComponent implements OnInit {
   }
 
   getInstructors(): void {
-    this.userService.getUsers(ROLE.INSTRUCTOR).subscribe(response => {
+    const roles = [ROLE.INSTRUCTOR, ROLE.CHAIR].join(',');
+    this.userService.getUsers(roles).subscribe(response => {
       if (response.code === 200) {
         this.instructors = response.data;
       }
@@ -57,5 +58,21 @@ export class InstructorComponent implements OnInit {
 
   getCourseNames(courses): string {
     return courses.map(course => course.subject + course.catalog).join(',');
+  }
+
+  isChair(instructor: User): boolean {
+    const roleNames = instructor.roles.map(role => role.name);
+    return roleNames.includes(ROLE.CHAIR);
+  }
+
+  updateChair(id: string, isChair: boolean): void {
+    this.userService.changeUserChair(id, isChair).subscribe(response => {
+      if (response.code === 200) {
+        this.toastr.success(`${isChair ? 'set' : 'cancel'} chair success`);
+        this.getInstructors();
+      } else {
+        this.toastr.error(`${isChair ? 'set' : 'cancel'} chair error`);
+      }
+    });
   }
 }
