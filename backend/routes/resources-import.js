@@ -162,13 +162,15 @@ router.post('/preference', upload.single('file'), async function(req, res, next)
 	const workSheetsFromBuffer = xlsx.parse(file.buffer);
 	const sheetData = workSheetsFromBuffer[0].data;
 	const preferences = [];
+	const noApplicantPrefers = [];
 	for (let i = 1; i < sheetData.length; i++) {
 		const preferenceData = sheetData[i];
 		if (preferenceData.length > 0) {
 			const [applicantName, applicantEmail, ...choices ] = preferenceData;
 			const applicationMatches = await  Application.find({ applicant_email: applicantEmail }).exec();
 			if (applicationMatches.length === 0) {
-				return res.json(genErrorResponse(null, 'invalid applicant'));
+				noApplicantPrefers.push(applicantEmail);
+				continue;
 			}
 			const courseIDs = [];
 			for (let i = 0, l = choices.length; i < l; i++) {
@@ -206,6 +208,10 @@ router.post('/preference', upload.single('file'), async function(req, res, next)
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {
+			if (noApplicantPrefers.length > 0) {
+				const emailStr = noApplicantPrefers.join(',');
+				return res.json(genErrorResponse(null, 'No applicant are required for ' + emailStr));
+			}
 			res.json(genSuccessResponse());
 		}
 	});

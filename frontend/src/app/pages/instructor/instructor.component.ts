@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ROLE } from '../../config/role';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-instructor',
@@ -15,18 +16,17 @@ export class InstructorComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
+    private userService: UserService,
     private router: Router
   ) {
-    const currentUser = localStorage.getItem('currentUser');
-    if (currentUser) {
-      this.userInfo = JSON.parse(currentUser);
-    }
+    this.userInfo = this.userService.getCurrentUser();
   }
 
   ngOnInit(): void {
   }
+
   logout(): void {
-    localStorage.removeItem('currentUser');
+    this.userService.clearCurrentUser();
     this.router.navigate(['/login']);
   }
 

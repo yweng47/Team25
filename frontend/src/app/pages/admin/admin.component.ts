@@ -3,6 +3,7 @@ import { InviteComponent } from '../../modals/invite/invite.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoticeComponent } from '../../modals/notice/notice.component';
 import { Router } from '@angular/router';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-admin',
@@ -15,12 +16,10 @@ export class AdminComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
+    private userService: UserService,
     private router: Router
   ) {
-    const currentUser = localStorage.getItem('currentUser');
-    if (currentUser) {
-      this.userInfo = JSON.parse(currentUser);
-    }
+    this.userInfo = this.userService.getCurrentUser();
   }
 
   ngOnInit(): void {
@@ -33,7 +32,7 @@ export class AdminComponent implements OnInit {
   }
 
   logout(): void {
-    localStorage.removeItem('currentUser');
+    this.userService.clearCurrentUser();
     this.router.navigate(['/login']);
   }
 }
