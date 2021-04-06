@@ -1,3 +1,12 @@
+<div class="top-bar">
+  <div class="mb-5">
+    <mat-form-field class="mr-3">
+      <mat-label>Course code</mat-label>
+      <input matInput placeholder="Course code" [(ngModel)]="keyword">
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="getAllCourses()">Query</button>
+  </div>
+</div>
 <table mat-table [dataSource]="courses" class="mat-elevation-z8">
   <ng-container matColumnDef="course_code">
     <th mat-header-cell *matHeaderCellDef> Course Code </th>

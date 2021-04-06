@@ -45,9 +45,10 @@ export class CourseService {
     });
   }
 
-  getAllCourses(pageNum: number, pageSize: number): Observable<any> {
+  getAllCourses(keyword: string, pageNum: number, pageSize: number): Observable<any> {
     return this.http.get(apiUrl.courses, {
       params: {
+        keyword,
         pageNum: String(pageNum),
         pageSize: String(pageSize),
       }

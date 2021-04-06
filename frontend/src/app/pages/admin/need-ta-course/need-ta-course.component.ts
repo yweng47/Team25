@@ -10,10 +10,11 @@ import { ToastrService } from 'ngx-toastr';
 export class NeedTaCourseComponent implements OnInit {
   courses = [];
   taCourses = [];
+  keyword = '';
   displayedColumns: string[] = ['course_code', 'section', 'component', 'need_ta'];
   pageSizeOptions: number[] = [5, 10, 25, 100];
   page = {
-    pageNum: 1,
+    pageNum: 0,
     pageSize: 10,
     totalSize: 0
   };
@@ -37,7 +38,7 @@ export class NeedTaCourseComponent implements OnInit {
   }
 
   getAllCourses(): void {
-    this.courseService.getAllCourses(this.page.pageNum, this.page.pageSize).subscribe(response => {
+    this.courseService.getAllCourses(this.keyword, this.page.pageNum, this.page.pageSize).subscribe(response => {
       if (response.code === 200) {
         this.courses = response.data.courses;
         this.page.totalSize = response.data.totalSize;
@@ -70,7 +71,7 @@ export class NeedTaCourseComponent implements OnInit {
 
   pageChange(event): void {
     const { pageIndex, pageSize } = event;
-    this.page.pageNum = pageIndex + 1;
+    this.page.pageNum = pageIndex;
     this.page.pageSize = pageSize;
     this.getAllCourses();
   }

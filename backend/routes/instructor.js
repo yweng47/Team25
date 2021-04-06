@@ -51,18 +51,25 @@ router.get('/course', async function(req, res, next) {
 
 // 分页获取所有课程
 router.get('/courses', async function(req, res, next) {
-	let { pageNum, pageSize } = req.query;
+	let { pageNum, pageSize, keyword } = req.query;
 
 	if (!pageNum || !pageSize) {
 		return res.json(genInvalidParamsResponse());
 	}
 
+	let filter = {}
+	if (keyword) {
+		filter = {
+			$or: [{subject: new RegExp(keyword)}, {catalog: new RegExp(keyword)}]
+		}
+	}
+
 	pageNum = Number.isInteger(+pageNum) ? +pageNum: 1;
 	pageSize = Number.isInteger(+pageSize) ? +pageSize: 10;
 
-	let courses = await Course.find({}).limit(pageSize)
+	let courses = await Course.find(filter).limit(pageSize)
 		.skip(pageNum * pageSize).exec();
-	let count = await Course.count().exec();
+	let count = await Course.find(filter).count().exec();
 	return res.json(genSuccessResponse({ pageNum, totalSize: count,  courses }));
 });
 
