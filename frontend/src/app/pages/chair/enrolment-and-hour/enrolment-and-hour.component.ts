@@ -40,14 +40,18 @@ export class EnrolmentAndHourComponent implements OnInit {
       if (response.code === 200) {
         this.toastr.success('import enrollment hours success');
         this.getEnrollmentHours();
-        this.enrolmentHourService.autoTAHours().subscribe(() => {
-          setTimeout(() => {
-            this.isAutoTAHours = false;
-          }, 2000);
-        });
+        this.autoTAHours();
       } else {
         this.toastr.error(response.message);
       }
+    });
+  }
+
+  autoTAHours(): void {
+    this.enrolmentHourService.autoTAHours().subscribe(() => {
+      setTimeout(() => {
+        this.isAutoTAHours = false;
+      }, 2000);
     });
   }
 
@@ -59,7 +63,9 @@ export class EnrolmentAndHourComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((response: any) => {
       if (response) {
+        this.isAutoTAHours = true;
         this.getEnrollmentHours();
+        this.autoTAHours();
       }
     });
   }

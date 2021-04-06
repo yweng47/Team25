@@ -15,6 +15,10 @@ import { CourseTaComponent } from '../pages/chair/course-ta/course-ta.component'
 import { TaHourComponent } from '../pages/chair/ta-hour/ta-hour.component';
 import { PreferenceComponent } from '../pages/admin/preference/preference.component';
 import { CourseHourComponent } from '../pages/instructor/course-hour/course-hour.component';
+import { NeedTaCourseComponent } from '../pages/admin/need-ta-course/need-ta-course.component';
+import { InstructorCourseTaComponent } from '../pages/instructor/instructor-course-ta/instructor-course-ta.component';
+import { InstructorTaHourComponent } from '../pages/instructor/instructor-ta-hour/instructor-ta-hour.component';
+import { InstructorReviewComponent } from '../pages/chair/instructor-review/instructor-review.component';
 
 const routes: Routes = [
   {
@@ -49,7 +53,19 @@ const routes: Routes = [
       {
         path: 'preference',
         component: PreferenceComponent
-      }
+      },
+      {
+        path: 'taCourse',
+        component: NeedTaCourseComponent
+      },
+      {
+        path: 'courseTA',
+        component: CourseTaComponent
+      },
+      {
+        path: 'taHour/:courseId/:enrolmentId',
+        component: TaHourComponent
+      },
     ]
   },
   {
@@ -73,6 +89,10 @@ const routes: Routes = [
         path: 'taHour/:courseId',
         component: TaHourComponent
       },
+      {
+        path: 'instructorReview',
+        component: InstructorReviewComponent
+      },
     ]
   },
   {
@@ -95,7 +115,15 @@ const routes: Routes = [
       {
         path: 'course-hour',
         component: CourseHourComponent
-      }
+      },
+      {
+        path: 'courseTA',
+        component: InstructorCourseTaComponent
+      },
+      {
+        path: 'taHour/:courseId',
+        component: InstructorTaHourComponent
+      },
     ]
   },
   {

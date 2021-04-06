@@ -6,7 +6,8 @@
   </div>
   <div class="info-item">
     <span class="info-label">TA Status:</span>
-    <span class="info-val">{{ applicantStatus[taHours[0].applications[0].status] }}</span>
+    <span class="info-val">{{ applicantStatus[taHours[0].applications.length > 0 ?
+      taHours[0].applications[0].status : 2] }}</span>
   </div>
 </div>
 <table mat-table [dataSource]="taHours" class="mat-elevation-z8">

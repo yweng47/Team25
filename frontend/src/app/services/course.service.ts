@@ -34,4 +34,23 @@ export class CourseService {
       ...course
     });
   }
+
+  getTaCourse(): Observable<any> {
+    return this.http.get(apiUrl.taCourse);
+  }
+
+  updateTaCourse(taCourse): Observable<any> {
+    return this.http.post(apiUrl.taCourse, {
+      ...taCourse
+    });
+  }
+
+  getAllCourses(pageNum: number, pageSize: number): Observable<any> {
+    return this.http.get(apiUrl.courses, {
+      params: {
+        pageNum: String(pageNum),
+        pageSize: String(pageSize),
+      }
+    });
+  }
 }

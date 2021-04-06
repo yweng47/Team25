@@ -7,17 +7,19 @@ const Application = require('../schema/application');
 const Preference = require('../schema/preference');
 const EnrolmentHour = require('../schema/enrolmentHour');
 const Allocation = require('../schema/allocation');
+const Review = require('../schema/review');
 const {genSuccessResponse} = require('../utils/utils');
 const mongoose = require('mongoose');
 const {genErrorResponse} = require('../utils/utils');
 const {genInvalidParamsResponse} = require('../utils/utils');
 const ObjectId = mongoose.Types.ObjectId;
 
+// 根据用户ID获取课程
 router.get('/course', async function(req, res, next) {
 	const { id } = req.query;
 
 	if (!id) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	let courses = await User.aggregate([
@@ -45,13 +47,31 @@ router.get('/course', async function(req, res, next) {
 		}
 	]).exec();
 	return res.json(genSuccessResponse(courses[0].courses));
+})
+
+// 分页获取所有课程
+router.get('/courses', async function(req, res, next) {
+	let { pageNum, pageSize } = req.query;
+
+	if (!pageNum || !pageSize) {
+		return res.json(genInvalidParamsResponse());
+	}
+
+	pageNum = Number.isInteger(+pageNum) ? +pageNum: 1;
+	pageSize = Number.isInteger(+pageSize) ? +pageSize: 10;
+
+	let courses = await Course.find({}).limit(pageSize)
+		.skip(pageNum * pageSize).exec();
+	let count = await Course.count().exec();
+	return res.json(genSuccessResponse({ pageNum, totalSize: count,  courses }));
 });
 
+// 根据课程ID获取课程
 router.get('/course/:id', async function(req, res, next) {
 	const { id } = req.params;
 
 	if (!id) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const course = await Course.findOne({ _id: id }).exec();
@@ -62,7 +82,7 @@ router.put('/course', async function(req, res, next) {
 	const courseBody = req.body;
 
 	if (!courseBody) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const course = new Course({ ...courseBody })
@@ -76,6 +96,7 @@ router.put('/course', async function(req, res, next) {
 	});
 });
 
+// 获取课程设置问题
 router.get('/question', async function(req, res, next) {
 	const { course, user } = req.query;
 
@@ -112,11 +133,12 @@ router.get('/question', async function(req, res, next) {
 	return res.json(genSuccessResponse(questions));
 });
 
+// 添加课程问题
 router.post('/question', async function(req, res, next) {
 	const questionBody = req.body;
 
 	if (!questionBody) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const question = new Question({ ...questionBody })
@@ -130,6 +152,7 @@ router.post('/question', async function(req, res, next) {
 	});
 });
 
+// 获取所有申请
 router.get('/application', async function(req, res, next) {
 	const { course } = req.query;
 
@@ -153,11 +176,12 @@ router.get('/application', async function(req, res, next) {
 	return res.json(genSuccessResponse(applications));
 });
 
+// 更新申请
 router.put('/application', async function(req, res, next) {
 	const applications = req.body;
 
 	if (!applications) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	for (let i = 0, l = applications.length; i < l; i++) {
@@ -168,7 +192,7 @@ router.put('/application', async function(req, res, next) {
 	res.json(genSuccessResponse());
 });
 
-
+// 获取课程所需TA时长
 router.get('/enrollmentHour', async function(req, res, next) {
 	const { course } = req.query;
 
@@ -198,11 +222,12 @@ router.get('/enrollmentHour', async function(req, res, next) {
 	return res.json(genSuccessResponse(enrollmentHours));
 });
 
+// 更新课程所需时长
 router.put('/enrollmentHour', async function(req, res, next) {
 	const enrollmentHoursBody = req.body;
 
 	if (!enrollmentHoursBody) {
-		return res.join(genInvalidParamsResponse());
+		return res.json(genInvalidParamsResponse());
 	}
 
 	const enrolmentHour = new EnrolmentHour({ ...enrollmentHoursBody })
@@ -216,7 +241,11 @@ router.put('/enrollmentHour', async function(req, res, next) {
 	});
 });
 
+// 自动分配TA时长
 router.post('/autoTAHours', async function(req, res, next) {
+	// clear all allocation before calculate
+	await Allocation.remove({}).exec();
+
 	const enrollmentHours = await EnrolmentHour.find({}).exec();
 	const applications = await Application.find({}).exec();
 	const preferences = await Preference.find({}).exec();
@@ -320,7 +349,14 @@ router.post('/autoTAHours', async function(req, res, next) {
 	});
 });
 
+// 获取课程所对应的TA数量
 router.get('/courseTA', async function(req, res, next) {
+	const { userId } = req.query;
+	const match = {};
+	if (userId) {
+		match._id = ObjectId(userId)
+	}
+
 	const enrollmentHours = await User.aggregate([
 		{
 			$lookup: {
@@ -346,11 +382,15 @@ router.get('/courseTA', async function(req, res, next) {
 				foreignField: "enrollment",
 				as: "allocations"
 			}
+		},
+		{
+			$match: match
 		}
 	]).exec();
 	return res.json(genSuccessResponse(enrollmentHours));
 });
 
+// 获取课程下每个TA分配时长的情况
 router.get('/taHour', async function(req, res, next) {
 	const { courseId, email } = req.query;
 
@@ -396,6 +436,92 @@ router.get('/taHour', async function(req, res, next) {
 	return res.json(genSuccessResponse(enrollmentHours));
 });
 
+// 新增课程下每个TA所对应的时长
+router.post('/taHour', async function(req, res, next) {
+	const { email, name, hour, enrollment } = req.body;
+
+	if (!email || !name || !hour || !enrollment) {
+		return res.json(genInvalidParamsResponse());
+	}
+	const enrolmentHour = await EnrolmentHour.findOne({ _id: ObjectId(enrollment) }).exec();
+	if (enrolmentHour) {
+		const currentTAHours = enrolmentHour.current_ta_hours;
+		const allocations = await Allocation.find({ enrollment }).exec();
+		const currentTotalHours = allocations.reduce((total, allocation) => {
+			return total += allocation.hour;
+		}, 0);
+		if (currentTotalHours + hour > currentTAHours) {
+			return res.json(genErrorResponse(null, 'The specified hour exceeds the course requirement'));
+		}
+		const allocation = new Allocation({
+			enrollment,
+			applicant_name: name,
+			applicant_email: email,
+			hour
+		});
+		allocation.save((err) => {
+			if (err) {
+				res.json(genErrorResponse(err));
+			} else {
+				res.json(genSuccessResponse());
+			}
+		});
+	} else {
+		return res.json(genErrorResponse(null, 'error enrollment id'));
+	}
+});
+
+// 修改课程下每个TA所对应的时长
+router.put('/taHour', async function(req, res, next) {
+	const { id, hour, enrollment } = req.body;
+
+	if (!id || !hour || !enrollment) {
+		return res.json(genInvalidParamsResponse());
+	}
+	const enrolmentHour = await EnrolmentHour.findOne({ _id: ObjectId(enrollment) }).exec();
+	if (enrolmentHour) {
+		let currentAllocation;
+		const currentTAHours = enrolmentHour.current_ta_hours;
+		const allocations = await Allocation.find({ enrollment }).exec();
+		const currentTotalHours = allocations.reduce((total, allocation) => {
+			if (allocation._id.toString() !== id) {
+				return total += allocation.hour;
+			} else {
+				currentAllocation = allocation;
+				return total;
+			}
+		}, 0);
+		if (currentTotalHours + hour > currentTAHours) {
+			return res.json(genErrorResponse(null, 'The specified hour exceeds the course requirement'));
+		}
+		if (currentAllocation) {
+			currentAllocation.hour = hour;
+			Allocation.findOneAndUpdate({ _id: currentAllocation._id }, currentAllocation, (err) => {
+				if (err) {
+					res.json(genErrorResponse(err));
+				} else {
+					res.json(genSuccessResponse());
+				}
+			});
+		} else {
+			genErrorResponse(null, 'error allocation id')
+		}
+	} else {
+		return res.json(genErrorResponse(null, 'error enrollment id'));
+	}
+});
+
+// 删除课程下每个TA所对应的时长
+router.delete('/taHour', async function(req, res, next) {
+	const { id } = req.query;
+	if (!id) {
+		return res.json(genInvalidParamsResponse());
+	}
+	await Allocation.deleteOne({ _id: ObjectId(id) }).exec();
+	return res.json(genSuccessResponse());
+});
+
+// 获取所有志愿
 router.get('/preference', async function(req, res, next) {
 
 	const preferences = await Preference.aggregate([
@@ -409,6 +535,130 @@ router.get('/preference', async function(req, res, next) {
 		}
 	]).exec();
 	return res.json(genSuccessResponse(preferences));
+});
+
+// 获取教授对TA分配情况的意见
+router.get('/review', async function(req, res, next) {
+	const { userId } = req.query;
+
+	const match = {};
+	if (userId) {
+		match.user = ObjectId(userId);
+	}
+
+	const reviews = await Review.aggregate([
+		{
+			$lookup: {
+				from: "courses",
+				localField: "course",
+				foreignField: "_id",
+				as: "courses"
+			}
+		},
+		{ $unwind: '$courses' },
+		{
+			$lookup: {
+				from: "users",
+				localField: "user",
+				foreignField: "_id",
+				as: "users"
+			}
+		},
+		{ $unwind: '$users' },
+		{
+			$match: match
+		}
+	]).exec();
+	return res.json(genSuccessResponse(reviews));
+});
+
+// 通过ID获取教授对TA分配情况的意见
+router.get('/review/:id', async function(req, res, next) {
+	const { id } = req.params;
+
+	if (!id) {
+		return res.json(genInvalidParamsResponse());
+	}
+
+	const review = await Review.findOne({ _id: ObjectId(id) }).exec();
+	return res.json(genSuccessResponse(review));
+});
+
+// 添加教授对TA分配情况的意见
+router.post('/review', async function(req, res, next) {
+	const reviewBody = req.body;
+
+	if (!reviewBody) {
+		return res.json(genInvalidParamsResponse());
+	}
+
+	const review = new Review({
+		...reviewBody
+	});
+
+	review.save((err) => {
+		if (err) {
+			res.json(genErrorResponse(err));
+		} else {
+			res.json(genSuccessResponse());
+		}
+	});
+});
+
+// 获取当前课程所对应的未分配的申请者
+router.get('/restTas', async function(req, res, next) {
+	const { courseId } = req.query;
+
+	if (!courseId) {
+		return res.json(genInvalidParamsResponse());
+	}
+
+	const applications = await Application.aggregate([
+		{
+			$lookup: {
+				from: "enrolment_hours",
+				localField: "course",
+				foreignField: "course",
+				as: "enrollment_hours"
+			}
+		},
+		{ $unwind: '$enrollment_hours' },
+		{
+			$match: {
+				course: ObjectId(courseId)
+			}
+		}
+	]).exec();
+	return res.json(genSuccessResponse(applications));
+});
+
+// 获取TA时长分配情况
+router.get('/allocation', async function(req, res, next) {
+	const allocations = await Allocation.find({}).exec();
+	return res.json(genSuccessResponse(allocations));
+});
+
+// 修改TA时长分配情况
+router.put('/allocation', async function(req, res, next) {
+	const allocationsBody = req.body;
+
+	if (!allocationsBody) {
+		return res.json(genInvalidParamsResponse());
+	}
+
+	try {
+		if (Array.isArray(allocationsBody)) {
+			await Allocation.remove({ enrollment: allocationsBody[0].enrollment }).exec();
+
+			for (let i = 0, l = allocationsBody.length; i < l; i++) {
+				const allocation = new Allocation({ ...allocationsBody[i] });
+				await allocation.save();
+			}
+		}
+		res.json(genSuccessResponse());
+	} catch (err) {
+		res.json(genErrorResponse(err));
+	}
 });
 
 module.exports = router;

@@ -5,6 +5,8 @@ import * as XLSX from 'xlsx';
 import { sheet2blob, startToDownload } from '../../../utils/utils';
 import { MatDialog } from '@angular/material/dialog';
 import { TsCourseComponent } from '../../../modals/ts-course/ts-course.component';
+import { AssignTaComponent } from '../../../modals/assign-ta/assign-ta.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-ta-hour',
@@ -13,19 +15,22 @@ import { TsCourseComponent } from '../../../modals/ts-course/ts-course.component
 })
 export class TaHourComponent implements OnInit {
   courseId = '';
+  enrolmentId = '';
   taHours = [];
-  displayedColumns: string[] = ['email', 'name', 'ta_hours'];
+  displayedColumns: string[] = ['email', 'name', 'ta_hours', 'actions'];
 
   constructor(
     private taService: TAService,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private toastr: ToastrService,
   ) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((queryParams: any) => {
-      const { courseId } = queryParams.params;
+      const { courseId, enrolmentId } = queryParams.params;
       this.courseId = courseId;
+      this.enrolmentId = enrolmentId;
       this.getTaHours();
     });
   }
@@ -58,5 +63,35 @@ export class TaHourComponent implements OnInit {
         width: '500px',
         data: email
       });
+  }
+
+  openAssignTAModal(taHour?: any): void {
+    const dialogRef = this.dialog.open(AssignTaComponent, {
+      width: '500px',
+      data: {
+        taHour: taHour ? { ...taHour } : null,
+        enrollment: this.enrolmentId
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((response: any) => {
+      if (response) {
+        this.getTaHours();
+      }
+    });
+  }
+
+  deleteAllocation(id: string): void {
+    const result = confirm('Do you want to delete the TA hour?');
+    if (result) {
+      this.taService.deleteTAHour(id).subscribe(response => {
+        if (response.code === 200) {
+          this.toastr.success('delete ta hour success');
+          this.getTaHours();
+        } else {
+          this.toastr.error(response.message);
+        }
+      });
+    }
   }
 }

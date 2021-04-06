@@ -33,7 +33,9 @@ export class LoginComponent implements OnInit {
 
   getNotice(): void {
     this.noticeService.getNotice().subscribe(response => {
-      this.notice = response.data[0];
+      if (response.data.length > 0) {
+        this.notice = response.data[0];
+      }
     });
   }
 
