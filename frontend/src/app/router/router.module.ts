@@ -63,7 +63,7 @@ const routes: Routes = [
         component: CourseTaComponent
       },
       {
-        path: 'taHour/:courseId',
+        path: 'taHour/:courseId/:enrolmentId',
         component: TaHourComponent
       },
     ]

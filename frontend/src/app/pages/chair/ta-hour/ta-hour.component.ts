@@ -15,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class TaHourComponent implements OnInit {
   courseId = '';
+  enrolmentId = '';
   taHours = [];
   displayedColumns: string[] = ['email', 'name', 'ta_hours', 'actions'];
 
@@ -27,8 +28,9 @@ export class TaHourComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((queryParams: any) => {
-      const { courseId } = queryParams.params;
+      const { courseId, enrolmentId } = queryParams.params;
       this.courseId = courseId;
+      this.enrolmentId = enrolmentId;
       this.getTaHours();
     });
   }
@@ -68,7 +70,7 @@ export class TaHourComponent implements OnInit {
       width: '500px',
       data: {
         taHour: taHour ? { ...taHour } : null,
-        enrollment: this.taHours[0].enrollment
+        enrollment: this.enrolmentId
       }
     });
 

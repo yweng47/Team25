@@ -11,6 +11,7 @@ const multer = require('multer');
 const { taHourRound, genSuccessResponse, genErrorResponse } = require('../utils/utils')
 const upload = multer();
 
+// 导入课程表
 router.get('/course', async function(req, res, next) {
 	const workSheetsFromBuffer = xlsx.parse(fs.readFileSync(`${__dirname}/../resources/Enrolment-20200918-sanitized.xlsx`));
 	const sheetData = workSheetsFromBuffer[0].data;
@@ -46,6 +47,7 @@ router.get('/course', async function(req, res, next) {
 	});
 });
 
+// 导入申请表
 router.post('/application', upload.single('file'), async function(req, res, next) {
 	const file = req.file;
 	const workSheetsFromBuffer = xlsx.parse(file.buffer);
@@ -55,6 +57,9 @@ router.post('/application', upload.single('file'), async function(req, res, next
 	for (let i = 1; i < sheetData.length; i++) {
 		const applicationData = sheetData[i];
 		const answers = [];
+		if (!applicationData[0]) {
+			continue;
+		}
 		applicationData.forEach((item, index) => {
 			if (index > 3 && index % 2 !== 0) {
 				answers.push(item);
@@ -78,7 +83,7 @@ router.post('/application', upload.single('file'), async function(req, res, next
 			return res.json(genErrorResponse(null, `invalid course code ${applicationData[0]}`));
 		}
 		const needTaCourse = await TaCourse.findOne({ course: courseCodeMatches[0]._id }).exec();
-		if (!needTaCourse.need_ta) {
+		if (!needTaCourse || !needTaCourse.need_ta) {
 			if (noNeedTaCourse.indexOf(applicationData[0]) === -1) {
 				noNeedTaCourse.push(applicationData[0]);
 			}
@@ -107,6 +112,7 @@ router.post('/application', upload.single('file'), async function(req, res, next
 	});
 });
 
+// 导入课程所需时长表
 router.post('/enrollmentHour', upload.single('file'), async function(req, res, next) {
 	const file = req.file;
 	const workSheetsFromBuffer = xlsx.parse(file.buffer);
@@ -115,6 +121,9 @@ router.post('/enrollmentHour', upload.single('file'), async function(req, res, n
 	for (let i = 1; i < sheetData.length; i++) {
 		const applicationData = sheetData[i];
 		const [course, lab_hour, previous_enrollments, previous_ta_hours, current_enrollments] = applicationData;
+		if (!course) {
+			continue;
+		}
 		const courseCodeMatches = await Course.aggregate([
 			{
 				$addFields: {
@@ -153,18 +162,24 @@ router.post('/enrollmentHour', upload.single('file'), async function(req, res, n
 	});
 });
 
+// 导入偏好表
 router.post('/preference', upload.single('file'), async function(req, res, next) {
 	const file = req.file;
 	const workSheetsFromBuffer = xlsx.parse(file.buffer);
 	const sheetData = workSheetsFromBuffer[0].data;
 	const preferences = [];
+	const noApplicantPrefers = [];
 	for (let i = 1; i < sheetData.length; i++) {
 		const preferenceData = sheetData[i];
 		if (preferenceData.length > 0) {
 			const [applicantName, applicantEmail, ...choices ] = preferenceData;
+			if (!applicantName) {
+				continue;
+			}
 			const applicationMatches = await  Application.find({ applicant_email: applicantEmail }).exec();
 			if (applicationMatches.length === 0) {
-				return res.json(genErrorResponse(null, 'invalid applicant'));
+				noApplicantPrefers.push(applicantEmail);
+				continue;
 			}
 			const courseIDs = [];
 			for (let i = 0, l = choices.length; i < l; i++) {
@@ -202,6 +217,10 @@ router.post('/preference', upload.single('file'), async function(req, res, next)
 		if (err) {
 			res.json(genErrorResponse(err));
 		} else {
+			if (noApplicantPrefers.length > 0) {
+				const emailStr = noApplicantPrefers.join(',');
+				return res.json(genErrorResponse(null, 'No applicant are required for ' + emailStr));
+			}
 			res.json(genSuccessResponse());
 		}
 	});

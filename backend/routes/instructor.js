@@ -14,6 +14,7 @@ const {genErrorResponse} = require('../utils/utils');
 const {genInvalidParamsResponse} = require('../utils/utils');
 const ObjectId = mongoose.Types.ObjectId;
 
+// 根据用户ID获取课程
 router.get('/course', async function(req, res, next) {
 	const { id } = req.query;
 
@@ -46,8 +47,33 @@ router.get('/course', async function(req, res, next) {
 		}
 	]).exec();
 	return res.json(genSuccessResponse(courses[0].courses));
+})
+
+// 分页获取所有课程
+router.get('/courses', async function(req, res, next) {
+	let { pageNum, pageSize, keyword } = req.query;
+
+	if (!pageNum || !pageSize) {
+		return res.json(genInvalidParamsResponse());
+	}
+
+	let filter = {}
+	if (keyword) {
+		filter = {
+			$or: [{subject: new RegExp(keyword)}, {catalog: new RegExp(keyword)}]
+		}
+	}
+
+	pageNum = Number.isInteger(+pageNum) ? +pageNum: 1;
+	pageSize = Number.isInteger(+pageSize) ? +pageSize: 10;
+
+	let courses = await Course.find(filter).limit(pageSize)
+		.skip(pageNum * pageSize).exec();
+	let count = await Course.find(filter).count().exec();
+	return res.json(genSuccessResponse({ pageNum, totalSize: count,  courses }));
 });
 
+// 根据课程ID获取课程
 router.get('/course/:id', async function(req, res, next) {
 	const { id } = req.params;
 
@@ -77,6 +103,7 @@ router.put('/course', async function(req, res, next) {
 	});
 });
 
+// 获取课程设置问题
 router.get('/question', async function(req, res, next) {
 	const { course, user } = req.query;
 
@@ -113,6 +140,7 @@ router.get('/question', async function(req, res, next) {
 	return res.json(genSuccessResponse(questions));
 });
 
+// 添加课程问题
 router.post('/question', async function(req, res, next) {
 	const questionBody = req.body;
 
@@ -131,6 +159,7 @@ router.post('/question', async function(req, res, next) {
 	});
 });
 
+// 获取所有申请
 router.get('/application', async function(req, res, next) {
 	const { course } = req.query;
 
@@ -154,6 +183,7 @@ router.get('/application', async function(req, res, next) {
 	return res.json(genSuccessResponse(applications));
 });
 
+// 更新申请
 router.put('/application', async function(req, res, next) {
 	const applications = req.body;
 
@@ -169,7 +199,7 @@ router.put('/application', async function(req, res, next) {
 	res.json(genSuccessResponse());
 });
 
-
+// 获取课程所需TA时长
 router.get('/enrollmentHour', async function(req, res, next) {
 	const { course } = req.query;
 
@@ -199,6 +229,7 @@ router.get('/enrollmentHour', async function(req, res, next) {
 	return res.json(genSuccessResponse(enrollmentHours));
 });
 
+// 更新课程所需时长
 router.put('/enrollmentHour', async function(req, res, next) {
 	const enrollmentHoursBody = req.body;
 
@@ -217,6 +248,7 @@ router.put('/enrollmentHour', async function(req, res, next) {
 	});
 });
 
+// 自动分配TA时长
 router.post('/autoTAHours', async function(req, res, next) {
 	// clear all allocation before calculate
 	await Allocation.remove({}).exec();
@@ -324,6 +356,7 @@ router.post('/autoTAHours', async function(req, res, next) {
 	});
 });
 
+// 获取课程所对应的TA数量
 router.get('/courseTA', async function(req, res, next) {
 	const { userId } = req.query;
 	const match = {};
@@ -364,6 +397,7 @@ router.get('/courseTA', async function(req, res, next) {
 	return res.json(genSuccessResponse(enrollmentHours));
 });
 
+// 获取课程下每个TA分配时长的情况
 router.get('/taHour', async function(req, res, next) {
 	const { courseId, email } = req.query;
 
@@ -409,7 +443,7 @@ router.get('/taHour', async function(req, res, next) {
 	return res.json(genSuccessResponse(enrollmentHours));
 });
 
-
+// 新增课程下每个TA所对应的时长
 router.post('/taHour', async function(req, res, next) {
 	const { email, name, hour, enrollment } = req.body;
 
@@ -444,6 +478,7 @@ router.post('/taHour', async function(req, res, next) {
 	}
 });
 
+// 修改课程下每个TA所对应的时长
 router.put('/taHour', async function(req, res, next) {
 	const { id, hour, enrollment } = req.body;
 
@@ -483,16 +518,17 @@ router.put('/taHour', async function(req, res, next) {
 	}
 });
 
+// 删除课程下每个TA所对应的时长
 router.delete('/taHour', async function(req, res, next) {
 	const { id } = req.query;
 	if (!id) {
 		return res.json(genInvalidParamsResponse());
 	}
 	await Allocation.deleteOne({ _id: ObjectId(id) }).exec();
-	return res.json(genSuccessResponse(preferences));
+	return res.json(genSuccessResponse());
 });
 
-
+// 获取所有志愿
 router.get('/preference', async function(req, res, next) {
 
 	const preferences = await Preference.aggregate([
@@ -508,6 +544,7 @@ router.get('/preference', async function(req, res, next) {
 	return res.json(genSuccessResponse(preferences));
 });
 
+// 获取教授对TA分配情况的意见
 router.get('/review', async function(req, res, next) {
 	const { userId } = req.query;
 
@@ -542,6 +579,7 @@ router.get('/review', async function(req, res, next) {
 	return res.json(genSuccessResponse(reviews));
 });
 
+// 通过ID获取教授对TA分配情况的意见
 router.get('/review/:id', async function(req, res, next) {
 	const { id } = req.params;
 
@@ -553,6 +591,7 @@ router.get('/review/:id', async function(req, res, next) {
 	return res.json(genSuccessResponse(review));
 });
 
+// 添加教授对TA分配情况的意见
 router.post('/review', async function(req, res, next) {
 	const reviewBody = req.body;
 
@@ -573,6 +612,7 @@ router.post('/review', async function(req, res, next) {
 	});
 });
 
+// 获取当前课程所对应的未分配的申请者
 router.get('/restTas', async function(req, res, next) {
 	const { courseId } = req.query;
 
@@ -599,11 +639,13 @@ router.get('/restTas', async function(req, res, next) {
 	return res.json(genSuccessResponse(applications));
 });
 
+// 获取TA时长分配情况
 router.get('/allocation', async function(req, res, next) {
 	const allocations = await Allocation.find({}).exec();
 	return res.json(genSuccessResponse(allocations));
 });
 
+// 修改TA时长分配情况
 router.put('/allocation', async function(req, res, next) {
 	const allocationsBody = req.body;
 

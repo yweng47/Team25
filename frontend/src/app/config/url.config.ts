@@ -7,6 +7,7 @@ const apiUrl = {
   checkToken: `${host}/checkToken`,
   getCourseByCode: `${host}/getCourseByCode`,
   course: `${host}/instructor/course`,
+  courses: `${host}/instructor/courses`,
   notice: `${host}/admin/notice`,
   question: `${host}/instructor/question`,
   importApplications: `${host}/import/application`,

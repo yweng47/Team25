@@ -15,6 +15,7 @@ const {sendMail} = require('../utils/mail');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
+// 获取所有用户
 router.get('/user', async function(req, res, next) {
 	const { role } = req.query;
 	let users = await User.aggregate([
@@ -43,6 +44,7 @@ router.get('/user', async function(req, res, next) {
 	return res.json(genSuccessResponse(users));
 });
 
+// 新增用户
 router.post('/user', async function(req, res, next) {
 	let { email, password, name, roles, relateCourses } = req.body;
 	password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
@@ -54,13 +56,13 @@ router.post('/user', async function(req, res, next) {
 		relateCourses
 	});
 	// auto insert course need ta collection
-	for (let i = 0, l = relateCourses.length; i < l; i++) {
-		const taCourse = new TaCourse({
-			course: relateCourses[i],
-			need_ta: true
-		});
-		await taCourse.save();
-	}
+	// for (let i = 0, l = relateCourses.length; i < l; i++) {
+	// 	const taCourse = new TaCourse({
+	// 		course: relateCourses[i],
+	// 		need_ta: true
+	// 	});
+	// 	await taCourse.save();
+	// }
 	user.save((err) => {
 		if (err) {
 			res.json(genErrorResponse(err));
@@ -70,30 +72,13 @@ router.post('/user', async function(req, res, next) {
 	});
 });
 
+// 得到是否需要TA
 router.get('/taCourse', async function(req, res, next) {
-	const taCourses = await TaCourse.aggregate([
-		{
-			$lookup: {
-				from: "courses",
-				localField: "course",
-				foreignField: "_id",
-				as: "courses"
-			}
-		},
-		{ $unwind: '$courses' },
-		{
-			$lookup: {
-				from: "users",
-				localField: "course",
-				foreignField: "relateCourses",
-				as: "users"
-			}
-		},
-		{ $unwind: '$users' },
-	]).exec();
+	const taCourses = await TaCourse.find({}).exec();
 	return res.json(genSuccessResponse(taCourses));
 });
 
+// 修改是否需要TA
 router.post('/taCourse', async function(req, res, next) {
 	let taCourseBody = req.body;
 
@@ -104,7 +89,7 @@ router.post('/taCourse', async function(req, res, next) {
 	const taCourse = new TaCourse({
 		...taCourseBody
 	});
-	taCourse.isNew = false;
+	taCourse.isNew = taCourseBody.isNew;
 
 	taCourse.save((err) => {
 		if (err) {
@@ -115,6 +100,7 @@ router.post('/taCourse', async function(req, res, next) {
 	});
 });
 
+// 修改用户角色为Chair
 router.post('/changeUserChair', async function(req, res, next) {
 	const { isChair, id } = req.body;
 
@@ -142,6 +128,7 @@ router.post('/changeUserChair', async function(req, res, next) {
 	});
 });
 
+// 添加角色类型
 router.post('/role', async function(req, res, next) {
 	const { name, description } = req.body;
 	const role = new Role({
@@ -157,6 +144,7 @@ router.post('/role', async function(req, res, next) {
 	});
 });
 
+// 邀请用户注册
 router.post('/inviteRegister', async function(req, res, next) {
 	const { email } = req.body;
 

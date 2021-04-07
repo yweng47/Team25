@@ -7,6 +7,7 @@
     <span class="spacer"></span>
     <button mat-button [matMenuTriggerFor]="menu">{{ userInfo.name }}</button>
     <mat-menu #menu="matMenu">
+      <button *ngIf="isInstructor()" mat-menu-item (click)="toInstructorPage()">The instructor</button>
       <button mat-menu-item (click)="logout()">Logout</button>
     </mat-menu>
   </mat-toolbar>

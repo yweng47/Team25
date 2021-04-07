@@ -20,6 +20,13 @@ export class UserService {
     return this.userInfo;
   }
 
+  clearCurrentUser(): any {
+    if (this.userInfo._id) {
+      localStorage.removeItem('currentUser');
+      this.userInfo = {};
+    }
+  }
+
   login(email: string, password: string): Observable<any> {
     return this.http.post(apiUrl.login, {
       email,

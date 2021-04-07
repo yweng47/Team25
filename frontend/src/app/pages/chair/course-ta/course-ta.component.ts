@@ -47,7 +47,7 @@ export class CourseTaComponent implements OnInit {
     startToDownload(sheet2blob(workSheet), 'CourseTAAssigned.xlsx');
   }
 
-  goTAHours(courseId: string): void {
-    this.router.navigate(['../taHour/' + courseId], {relativeTo: this.route});
+  goTAHours(courseId: string, enrolmentId: string): void {
+    this.router.navigate(['../taHour/' + courseId + '/' + enrolmentId], {relativeTo: this.route});
   }
 }

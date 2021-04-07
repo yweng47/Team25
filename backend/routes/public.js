@@ -12,6 +12,7 @@ router.get('/', async function(req, res, next) {
 	return res.json([]);
 });
 
+// 用户登录
 router.post('/login', async function(req, res, next) {
 	const { email, password } = req.body;
 
@@ -32,6 +33,7 @@ router.post('/login', async function(req, res, next) {
 	}
 });
 
+// 检查邀请注册的token是否合法
 router.post('/checkToken', async function(req, res) {
 	const { access_token } = req.body;
 
@@ -48,7 +50,7 @@ router.post('/checkToken', async function(req, res) {
 	}
 });
 
-
+// 通过课程code获取课程
 router.get('/getCourseByCode', async function(req, res) {
 	const { code }= req.query;
 
